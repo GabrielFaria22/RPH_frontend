@@ -1,0 +1,43 @@
+:root {
+  --void: #080610;
+  --night: #100d1c;
+  --mist: #f6efe8;
+  --ash: #c8bdc9;
+  --blood: #e92045;
+  --ember: #f2b964;
+  --violet: #6f46d8;
+  --display: Georgia, 'Times New Roman', serif;
+  --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+
+  font-family: var(--sans);
+  color: var(--mist);
+  background: var(--void);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--void);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+}
