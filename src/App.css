@@ -886,7 +886,10 @@
 }
 
 .back-button {
+  display: inline-flex;
   min-height: 42px;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 26px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
@@ -895,6 +898,7 @@
   color: var(--mist);
   font: inherit;
   font-weight: 850;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -917,6 +921,13 @@
   margin: 74px auto 0;
 }
 
+.index-title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: end;
+}
+
 .public-index-page h1 {
   margin: 12px 0 16px;
   color: #fff9f3;
@@ -933,6 +944,31 @@
   font-size: 20px;
   font-weight: 600;
   line-height: 1.45;
+}
+
+.index-title-row p:not(.eyebrow) {
+  max-width: 720px;
+  margin: 0;
+  color: var(--ash);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.create-resource-link {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #e92045, #9d1736);
+  color: #fff7f1;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow:
+    0 18px 38px rgba(150, 10, 32, 0.32),
+    inset 0 1px rgba(255, 255, 255, 0.28);
 }
 
 .cover-index-grid {
@@ -1099,6 +1135,15 @@
   margin: 22px 0;
 }
 
+.wiki-article-actions .back-button,
+.edit-page > .back-button {
+  margin-bottom: 0;
+}
+
+.edit-page > .back-button + .back-button {
+  margin-left: 10px;
+}
+
 .wiki-title-block {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1130,6 +1175,181 @@
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
+}
+
+.universe-linked-archive {
+  margin: -2px 0 24px;
+}
+
+.universe-link-triggers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.universe-link-triggers button {
+  display: inline-grid;
+  min-width: 160px;
+  min-height: 58px;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 0 16px;
+  background:
+    linear-gradient(135deg, rgba(242, 185, 100, 0.12), rgba(233, 32, 69, 0.08)),
+    rgba(15, 12, 27, 0.74);
+  color: #fff7f1;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.universe-link-triggers button:hover,
+.universe-link-triggers button.active {
+  border-color: rgba(242, 185, 100, 0.42);
+  background:
+    linear-gradient(135deg, rgba(242, 185, 100, 0.2), rgba(233, 32, 69, 0.12)),
+    rgba(32, 24, 48, 0.9);
+}
+
+.universe-link-triggers span {
+  display: grid;
+  width: 34px;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(242, 185, 100, 0.18);
+  color: var(--ember);
+  font-size: 16px;
+}
+
+.universe-linked-panel {
+  margin-top: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+    rgba(15, 12, 27, 0.88);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.linked-panel-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.linked-panel-header h2 {
+  margin: 0;
+  color: #fff9f3;
+  font-family: var(--display);
+  font-size: 31px;
+  line-height: 1;
+}
+
+.linked-panel-header label {
+  display: grid;
+  gap: 7px;
+  color: var(--ember);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.linked-panel-header input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  padding: 0 13px;
+  background: rgba(8, 6, 16, 0.72);
+  color: #fff;
+  font: inherit;
+  outline: none;
+}
+
+.linked-panel-header input:focus {
+  border-color: rgba(242, 185, 100, 0.54);
+}
+
+.linked-world-list,
+.linked-character-list {
+  display: grid;
+  gap: 10px;
+}
+
+.linked-world-row,
+.linked-character-row {
+  width: 100%;
+  border: 0;
+  color: #fff9f3;
+  font: inherit;
+  font-weight: 900;
+  text-align: left;
+  cursor: pointer;
+}
+
+.linked-world-row {
+  min-height: 92px;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 0;
+  background:
+    linear-gradient(90deg, rgba(8, 6, 16, 0.9), rgba(8, 6, 16, 0.28)),
+    linear-gradient(135deg, rgba(111, 70, 216, 0.48), rgba(143, 23, 52, 0.62));
+  background-position: center;
+  background-size: cover;
+}
+
+.linked-world-row span {
+  display: flex;
+  width: min(54%, 420px);
+  min-height: 92px;
+  align-items: center;
+  padding: 18px 22px;
+  background: linear-gradient(90deg, rgba(8, 6, 16, 0.88), rgba(8, 6, 16, 0));
+  font-family: var(--display);
+  font-size: 29px;
+  line-height: 1.02;
+}
+
+.linked-character-row {
+  display: grid;
+  min-height: 72px;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 9px 14px 9px 9px;
+  background: rgba(8, 6, 16, 0.56);
+}
+
+.linked-character-row:hover,
+.linked-world-row:hover {
+  box-shadow: 0 0 0 2px rgba(242, 185, 100, 0.2);
+}
+
+.linked-character-row img,
+.linked-character-fallback {
+  width: 54px;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.linked-character-fallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #6f46d8, #8f1734);
+  color: rgba(255, 249, 243, 0.78);
+  font-family: var(--display);
+  font-size: 22px;
 }
 
 .wiki-layout {
@@ -1347,6 +1567,7 @@
 }
 
 .wiki-editor-card input:not([type='checkbox']),
+.wiki-editor-card select,
 .wiki-editor-card textarea {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -1355,6 +1576,17 @@
   background: rgba(8, 6, 16, 0.74);
   color: #fff;
   outline: none;
+}
+
+.wiki-editor-card select {
+  min-height: 54px;
+  margin-bottom: 18px;
+}
+
+.resource-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
 }
 
 .wiki-editor-card input[type='file'] {
@@ -1417,6 +1649,80 @@
   color: var(--ash);
   font-size: 14px;
   line-height: 1.42;
+}
+
+.image-crop-input {
+  display: grid;
+}
+
+.image-crop-panel {
+  display: grid;
+  gap: 12px;
+  margin: -4px 0 18px;
+}
+
+.image-crop-preview {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(242, 185, 100, 0.24);
+  border-radius: 16px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    rgba(8, 6, 16, 0.82);
+  background-size: 28px 28px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.image-crop-preview:active {
+  cursor: grabbing;
+}
+
+.image-crop-input.cover .image-crop-preview {
+  max-height: 230px;
+}
+
+.image-crop-input.portrait .image-crop-preview {
+  max-width: 280px;
+}
+
+.image-crop-preview img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  transform-origin: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+.image-crop-panel input[type='range'] {
+  width: 100%;
+  accent-color: var(--ember);
+}
+
+.image-crop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.image-crop-actions button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0 13px;
+  background: rgba(242, 185, 100, 0.16);
+  color: var(--ember);
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.image-crop-panel p {
+  margin-top: -4px;
 }
 
 .snippet-toolbar {
@@ -1635,6 +1941,224 @@
   background: rgba(8, 6, 16, 0.46);
 }
 
+.create-resource-form {
+  max-width: 760px;
+}
+
+.family-tree-page {
+  width: min(1480px, calc(100% - 40px));
+  margin: 74px auto 0;
+}
+
+.family-tree-title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.family-tree-title-row h1 {
+  margin: 12px 0 0;
+  color: #fff9f3;
+  font-family: var(--display);
+  font-size: clamp(42px, 6vw, 76px);
+  line-height: 0.96;
+}
+
+.family-tree-workspace {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 18px;
+  min-height: 720px;
+}
+
+.family-tree-sidebar,
+.family-tree-canvas-panel {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(15, 12, 27, 0.78);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.24);
+}
+
+.family-tree-sidebar {
+  padding: 18px;
+  overflow: auto;
+}
+
+.family-tree-sidebar label,
+.tree-edit-panel label {
+  display: block;
+  margin: 14px 0 8px;
+  color: #fff7f1;
+  font-weight: 800;
+}
+
+.family-tree-sidebar input,
+.family-tree-sidebar select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(8, 6, 16, 0.74);
+  color: #fff;
+  outline: none;
+}
+
+.family-tree-sidebar select[multiple] {
+  min-height: 120px;
+}
+
+.family-tree-sidebar button,
+.family-tree-toolbar button,
+.tree-save-button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff7f1;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.family-tree-sidebar button:disabled,
+.family-tree-toolbar button:disabled,
+.tree-save-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.family-tree-search-results,
+.tree-edit-panel {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tree-detail-panel,
+.tree-edit-panel {
+  margin-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 18px;
+}
+
+.tree-detail-panel h2,
+.tree-edit-panel h2 {
+  margin: 0 0 8px;
+  color: #fff9f3;
+  font-size: 18px;
+}
+
+.tree-detail-panel p,
+.tree-edit-panel p {
+  margin: 0;
+  color: var(--ash);
+  line-height: 1.5;
+}
+
+.tree-save-button {
+  background: linear-gradient(135deg, #e92045, #9d1736);
+}
+
+.family-tree-canvas-panel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.family-tree-toolbar {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 12px;
+}
+
+.family-tree-stage {
+  position: relative;
+  height: 660px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    rgba(5, 4, 13, 0.72);
+  background-size: 36px 36px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.family-tree-stage:active {
+  cursor: grabbing;
+}
+
+.family-tree-edges,
+.family-tree-node-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 0;
+}
+
+.family-tree-edges {
+  pointer-events: none;
+}
+
+.family-tree-edges line {
+  stroke: rgba(232, 202, 138, 0.72);
+  stroke-width: 3;
+  pointer-events: stroke;
+}
+
+.family-tree-edges line.selected {
+  stroke: #ff4f73;
+  stroke-width: 5;
+}
+
+.family-tree-edges text {
+  fill: #fff7f1;
+  font-size: 13px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: rgba(5, 4, 13, 0.9);
+  stroke-width: 5px;
+}
+
+.family-tree-node {
+  position: absolute;
+  display: grid;
+  width: 176px;
+  min-height: 96px;
+  align-content: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  padding: 16px;
+  background:
+    linear-gradient(145deg, rgba(255, 248, 230, 0.14), rgba(255, 255, 255, 0.04)),
+    rgba(20, 15, 31, 0.94);
+  color: #fff9f3;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.26);
+  cursor: pointer;
+  user-select: none;
+}
+
+.family-tree-node.selected {
+  border-color: #ff4f73;
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.28),
+    0 0 0 3px rgba(255, 79, 115, 0.22);
+}
+
+.family-tree-node span {
+  font-weight: 900;
+}
+
+.family-tree-node small {
+  color: var(--ash);
+  font-weight: 700;
+}
+
 @media (max-width: 980px) {
   .hero-section {
     min-height: auto;
@@ -1680,9 +2204,30 @@
     flex-wrap: wrap;
   }
 
+  .index-title-row {
+    grid-template-columns: 1fr;
+  }
+
+  .linked-panel-header {
+    grid-template-columns: 1fr;
+  }
+
   .wiki-layout,
   .edit-layout {
     grid-template-columns: 1fr;
+  }
+
+  .resource-field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .family-tree-title-row,
+  .family-tree-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .family-tree-stage {
+    height: 560px;
   }
 
   .wiki-toc {
@@ -1766,6 +2311,20 @@
   .wiki-cover {
     min-height: 170px;
     border-radius: 22px;
+  }
+
+  .universe-link-triggers button {
+    width: 100%;
+  }
+
+  .linked-world-row span {
+    width: 100%;
+    font-size: 24px;
+  }
+
+  .universe-linked-panel {
+    border-radius: 20px;
+    padding: 14px;
   }
 
   .wiki-body,
