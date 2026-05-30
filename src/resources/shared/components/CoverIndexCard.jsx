@@ -1,6 +1,7 @@
 
-import { initialsFor, resourceImage, summarize } from '../../resourceHelpers'
+import { initialsFor, resourceImage, summarize } from '../../../concerns/resourceHelpers'
 
+// Renders one resource card in public index grids.
 export function CoverIndexCard({ item, kind, onNavigate }) {
   const cover = resourceImage(item)
   const description =

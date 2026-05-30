@@ -6,6 +6,7 @@ import { FamilyTreeCanvas } from '../components/FamilyTreeCanvas'
 
 const kind = 'family_trees'
 
+// Renders the family tree show/edit page and loads eligible characters.
 export function FamilyTreePage({ id, mode, onBack, onLogout, onNavigate, user }) {
   const { error, resource: familyTree, setResource, status } = useResource(kind, id)
   const { items: characters, status: charactersStatus } = usePublicResources('characters')
@@ -21,6 +22,7 @@ export function FamilyTreePage({ id, mode, onBack, onLogout, onNavigate, user })
   const [saveStatus, setSaveStatus] = useState('idle')
   const [message, setMessage] = useState('')
 
+  // Persists the current family tree canvas layout to the API.
   const handleSave = async (layout) => {
     if (!familyTree) return
 

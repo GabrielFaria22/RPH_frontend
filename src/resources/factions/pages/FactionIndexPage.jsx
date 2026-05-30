@@ -1,7 +1,8 @@
-import { PublicIndexPage } from '../../../concerns/resourcePages'
+import { PublicResourceIndexPage } from '../../shared/pages/PublicResourceIndexPage'
 
 const kind = 'factions'
 
+// Renders the public index page for faction resources.
 export function FactionIndexPage(props) {
-  return <PublicIndexPage {...props} kind={kind} title="All Factions" />
+  return <PublicResourceIndexPage {...props} kind={kind} title="All Factions" />
 }

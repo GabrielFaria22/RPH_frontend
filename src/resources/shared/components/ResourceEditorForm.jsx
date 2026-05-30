@@ -1,15 +1,16 @@
 
 import { useMemo, useState } from 'react'
-import { patchFormData } from '../../api'
-import { useArchiveData } from '../../resourceHooks'
+import { patchFormData } from '../../../concerns/api'
+import { useArchiveData } from '../../../concerns/resourceHooks'
 import {
   attachmentUrl,
   parseArticleSections,
   sanitizeArticleHtml,
   sectionsToHtml,
-} from '../../resourceHelpers'
+} from '../../../concerns/resourceHelpers'
 import { ImageCropInput } from './ImageCropInput'
 
+// Renders the shared edit form and maps resource-specific fields from config.
 export function ResourceEditorForm({ config, id, kind, onSaved, resource, setResource }) {
   const { archive, error: archiveError, status: archiveStatus } = useArchiveData()
   const initialFriendlyArticle = useMemo(
@@ -58,7 +59,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
     name.trim() &&
     (kind === 'universes' || universeId) &&
     (!config.needsLeaderCharacter || leaderCharacterId) &&
-    (!config.hasFamilies || familyIds.length > 0)
+    (!config.requiresFamilies || familyIds.length > 0)
   const preview = useMemo(
     () => sanitizeArticleHtml(effectiveDescription),
     [effectiveDescription],
@@ -138,6 +139,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
         ]
       : archive.families
 
+  // Switches to HTML mode and appends a reusable snippet to the article body.
   const appendHtmlSnippet = (snippet) => {
     setEditorTab('html')
     setDescription((current) =>
@@ -145,6 +147,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
     )
   }
 
+  // Inserts an uploaded image into the article HTML as an image tag.
   const appendAttachedImage = (attachment) => {
     const src = attachmentUrl(attachment)
     if (!src) return
@@ -152,6 +155,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
     appendHtmlSnippet(`<img src="${src}" alt="${attachment.filename || name}">`)
   }
 
+  // Keeps the friendly and HTML editors in sync when the user changes modes.
   const switchEditorTab = (tab) => {
     if (tab === 'html' && editorTab === 'friendly') {
       setDescription(friendlyDescription)
@@ -164,6 +168,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
     setEditorTab(tab)
   }
 
+  // Updates one section in the friendly article editor.
   const updateSection = (index, field, value) => {
     setFriendlyArticle((current) => ({
       ...current,
@@ -173,6 +178,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
     }))
   }
 
+  // Adds a new friendly-editor section to the article draft.
   const addSection = () => {
     setFriendlyArticle((current) => ({
       ...current,
@@ -180,6 +186,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
     }))
   }
 
+  // Removes a friendly-editor section while preserving at least one section.
   const removeSection = (index) => {
     setFriendlyArticle((current) => ({
       ...current,
@@ -190,6 +197,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
     }))
   }
 
+  // Saves the edited resource and uploads any selected media files.
   const handleSave = async (event) => {
     event.preventDefault()
     setSaveStatus('loading')
@@ -332,7 +340,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
             <select
               id="resource-families"
               multiple
-              required
+              required={Boolean(config.requiresFamilies)}
               value={familyIds}
               onChange={(event) =>
                 setFamilyIds(
@@ -349,7 +357,8 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
                 ))}
             </select>
             <p className="editor-help">
-              Select at least one family. Use Ctrl or Shift to select more than one.
+              {config.requiresFamilies ? 'Select at least one family. ' : ''}
+              Use Ctrl or Shift to select more than one.
             </p>
           </>
         ) : null}

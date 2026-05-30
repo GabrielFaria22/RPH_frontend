@@ -11,36 +11,36 @@ import {
   CharacterEditPage,
   CharacterIndexPage,
   CharacterShowPage,
-} from './resources/characters'
+} from './resources/characters/CharacterResource'
 import {
   FactionCreatePage,
   FactionEditPage,
   FactionIndexPage,
   FactionShowPage,
-} from './resources/factions'
+} from './resources/factions/FactionResource'
 import {
   FamilyCreatePage,
   FamilyEditPage,
   FamilyIndexPage,
   FamilyShowPage,
-} from './resources/families'
+} from './resources/families/FamilyResource'
 import {
   FamilyTreeEditPage,
   FamilyTreeShowPage,
-} from './resources/familyTrees'
+} from './resources/familyTrees/FamilyTreeResource'
 import { RESOURCE_CONFIG } from './concerns/resourceConfig'
 import {
   UniverseCreatePage,
   UniverseEditPage,
   UniverseIndexPage,
   UniverseShowPage,
-} from './resources/universes'
+} from './resources/universes/UniverseResource'
 import {
   WorldCreatePage,
   WorldEditPage,
   WorldIndexPage,
   WorldShowPage,
-} from './resources/worlds'
+} from './resources/worlds/WorldResource'
 import {
   clearSession,
   getInitialEmail,

@@ -1,7 +1,8 @@
-import { PublicIndexPage } from '../../../concerns/resourcePages'
+import { PublicResourceIndexPage } from '../../shared/pages/PublicResourceIndexPage'
 
 const kind = 'universes'
 
+// Renders the public index page for universe resources.
 export function UniverseIndexPage(props) {
-  return <PublicIndexPage {...props} kind={kind} title="All Universes" />
+  return <PublicResourceIndexPage {...props} kind={kind} title="All Universes" />
 }

@@ -1,11 +1,12 @@
 
 import { useState } from 'react'
-import { AppHeader } from '../../pages/app/AppHeader'
-import { postFormData } from '../api'
-import { RESOURCE_CONFIG } from '../resourceConfig'
-import { useArchiveData } from '../resourceHooks'
-import { ImageCropInput } from './components/ImageCropInput'
+import { AppHeader } from '../../../pages/app/AppHeader'
+import { postFormData } from '../../../concerns/api'
+import { RESOURCE_CONFIG } from '../../../concerns/resourceConfig'
+import { useArchiveData } from '../../../concerns/resourceHooks'
+import { ImageCropInput } from '../components/ImageCropInput'
 
+// Renders the shared create form used by resource-specific create pages.
 export function ResourceCreatePage({
   kind,
   onBack,
@@ -41,8 +42,9 @@ export function ResourceCreatePage({
     status !== 'loading' &&
     (!needsUniverse || universeId) &&
     (!config.needsLeaderCharacter || leaderCharacterId) &&
-    (!config.hasFamilies || familyIds.length > 0)
+    (!config.requiresFamilies || familyIds.length > 0)
 
+  // Creates the resource by translating the current form state into API form data.
   const handleSubmit = async (event) => {
     event.preventDefault()
     setStatus('loading')
@@ -194,7 +196,7 @@ export function ResourceCreatePage({
               <select
                 id="new-resource-families"
                 multiple
-                required
+                required={Boolean(config.requiresFamilies)}
                 value={familyIds}
                 onChange={(event) =>
                   setFamilyIds(
@@ -211,7 +213,8 @@ export function ResourceCreatePage({
                   ))}
               </select>
               <p className="editor-help">
-                Select at least one family. Use Ctrl or Shift to select more than one.
+                {config.requiresFamilies ? 'Select at least one family. ' : ''}
+                Use Ctrl or Shift to select more than one.
               </p>
             </>
           ) : null}

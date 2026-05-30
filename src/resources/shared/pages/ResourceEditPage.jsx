@@ -1,9 +1,10 @@
 
-import { AppHeader } from '../../pages/app/AppHeader'
-import { RESOURCE_CONFIG } from '../resourceConfig'
-import { useResource } from '../resourceHooks'
-import { ResourceEditorForm } from './components/ResourceEditorForm'
+import { AppHeader } from '../../../pages/app/AppHeader'
+import { RESOURCE_CONFIG } from '../../../concerns/resourceConfig'
+import { useResource } from '../../../concerns/resourceHooks'
+import { ResourceEditorForm } from '../components/ResourceEditorForm'
 
+// Renders the shared edit page shell and delegates form fields to ResourceEditorForm.
 export function ResourceEditPage({
   id,
   kind,

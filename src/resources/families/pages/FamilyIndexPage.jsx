@@ -1,7 +1,8 @@
-import { PublicIndexPage } from '../../../concerns/resourcePages'
+import { PublicResourceIndexPage } from '../../shared/pages/PublicResourceIndexPage'
 
 const kind = 'families'
 
+// Renders the public index page for family resources.
 export function FamilyIndexPage(props) {
-  return <PublicIndexPage {...props} kind={kind} title="All Families" />
+  return <PublicResourceIndexPage {...props} kind={kind} title="All Families" />
 }

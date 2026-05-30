@@ -13,15 +13,18 @@ const CROP_PRESETS = {
   },
 }
 
+// Keeps a number inside a fixed range for zoom and drag boundaries.
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value))
 }
 
+// Builds a predictable filename for the cropped upload generated in-browser.
 function croppedFileName(fileName, mode) {
   const cleanName = fileName.replace(/\.[^.]+$/, '')
   return `${cleanName}-${mode}-crop.jpg`
 }
 
+// Renders an image picker that lets users crop cover and portrait uploads.
 export function ImageCropInput({ id, label, mode, onCroppedFile }) {
   const preset = CROP_PRESETS[mode]
   const imageRef = useRef(null)
@@ -65,12 +68,14 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
     return () => resizeObserver.disconnect()
   }, [sourceUrl])
 
+  // Resets the cropper to its centered, unzoomed state.
   const resetCrop = () => {
     setZoom(1)
     setOffset({ x: 0, y: 0 })
     setMessage('')
   }
 
+  // Loads a selected image file into the crop preview.
   const handleFileChange = (event) => {
     const file = event.target.files?.[0] || null
     if (sourceUrl) URL.revokeObjectURL(sourceUrl)
@@ -82,6 +87,7 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
     onCroppedFile(null)
   }
 
+  // Calculates how the source image fits inside the visible crop viewport.
   const previewMetrics = () => {
     if (
       !previewSize.width ||
@@ -110,6 +116,7 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
   }
   const metrics = previewMetrics()
 
+  // Restricts drag offsets so the crop viewport never shows empty space.
   const clampOffset = (nextOffset, nextZoom = zoom) => {
     if (
       !previewSize.width ||
@@ -137,12 +144,14 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
     }
   }
 
+  // Applies zoom changes and re-clamps the current image offset.
   const handleZoomChange = (event) => {
     const nextZoom = Number(event.target.value)
     setZoom(nextZoom)
     setOffset((current) => clampOffset(current, nextZoom))
   }
 
+  // Starts a pointer drag for repositioning the crop area.
   const startDrag = (event) => {
     if (!sourceUrl) return
 
@@ -156,6 +165,7 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
     }
   }
 
+  // Updates the crop offset while the pointer is dragging.
   const moveDrag = (event) => {
     if (!dragRef.current) return
 
@@ -166,10 +176,12 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
     setOffset(clampOffset(nextOffset))
   }
 
+  // Ends the current crop drag interaction.
   const stopDrag = () => {
     dragRef.current = null
   }
 
+  // Draws the selected crop to a canvas and returns it as a File.
   const applyCrop = () => {
     const image = imageRef.current
     const metrics = previewMetrics()

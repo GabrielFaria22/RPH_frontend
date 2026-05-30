@@ -1,10 +1,11 @@
 
-import { AppHeader } from '../../pages/app/AppHeader'
-import { RESOURCE_CONFIG } from '../resourceConfig'
-import { usePublicResources } from '../resourceHooks'
-import { CoverIndexCard } from './components/CoverIndexCard'
+import { AppHeader } from '../../../pages/app/AppHeader'
+import { RESOURCE_CONFIG } from '../../../concerns/resourceConfig'
+import { usePublicResources } from '../../../concerns/resourceHooks'
+import { CoverIndexCard } from '../components/CoverIndexCard'
 
-export function PublicIndexPage({
+// Renders the searchable public index for a single resource type.
+export function PublicResourceIndexPage({
   kind,
   onLogout,
   onNavigate,

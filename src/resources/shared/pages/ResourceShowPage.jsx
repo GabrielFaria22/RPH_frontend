@@ -1,16 +1,17 @@
 
-import { useMemo, useState } from 'react'
-import { AppHeader } from '../../pages/app/AppHeader'
-import { RESOURCE_CONFIG } from '../resourceConfig'
-import { useArchiveData, usePublicResources, useResource } from '../resourceHooks'
+import { useMemo } from 'react'
+import { AppHeader } from '../../../pages/app/AppHeader'
+import { RESOURCE_CONFIG } from '../../../concerns/resourceConfig'
+import { useArchiveData, useResource } from '../../../concerns/resourceHooks'
 import {
   displayNameById,
   initialsFor,
   resourceImage,
   resourcePortrait,
   sanitizeArticleHtml,
-} from '../resourceHelpers'
+} from '../../../concerns/resourceHelpers'
 
+// Renders the shared wiki-style show page for a resource type.
 export function ResourceShowPage({
   id,
   kind,
@@ -18,6 +19,7 @@ export function ResourceShowPage({
   onEdit,
   onLogout,
   onNavigate,
+  renderAfterTitle,
   user,
 }) {
   const config = RESOURCE_CONFIG[kind]
@@ -89,12 +91,7 @@ export function ResourceShowPage({
             <span>{resource.public ? 'Public page' : 'Private page'}</span>
           </header>
 
-          {kind === 'universes' ? (
-            <UniverseLinkedLists
-              universe={resource}
-              onNavigate={onNavigate}
-            />
-          ) : null}
+          {renderAfterTitle ? renderAfterTitle(resource) : null}
 
           <div className="wiki-layout">
             <aside className="wiki-toc" aria-label="Contents">
@@ -219,171 +216,5 @@ export function ResourceShowPage({
         </article>
       ) : null}
     </main>
-  )
-}
-
-function UniverseLinkedLists({ onNavigate, universe }) {
-  const [activePanel, setActivePanel] = useState('')
-  const [worldSearch, setWorldSearch] = useState('')
-  const [characterSearch, setCharacterSearch] = useState('')
-  const { items: worlds, status: worldsStatus } = usePublicResources('worlds')
-  const { items: characters, status: charactersStatus } =
-    usePublicResources('characters')
-  const universeWorlds = useMemo(
-    () =>
-      worlds.filter((world) => belongsToUniverse(world, universe.id)),
-    [universe.id, worlds],
-  )
-  const universeCharacters = useMemo(
-    () =>
-      characters.filter((character) => belongsToUniverse(character, universe.id)),
-    [characters, universe.id],
-  )
-  const visibleWorlds = useMemo(
-    () => filterByName(universeWorlds, worldSearch),
-    [universeWorlds, worldSearch],
-  )
-  const visibleCharacters = useMemo(
-    () => filterByName(universeCharacters, characterSearch),
-    [characterSearch, universeCharacters],
-  )
-
-  const togglePanel = (panel) => {
-    setActivePanel((current) => (current === panel ? '' : panel))
-  }
-
-  return (
-    <section className="universe-linked-archive" aria-label="Universe resources">
-      <div className="universe-link-triggers">
-        <button
-          className={activePanel === 'worlds' ? 'active' : ''}
-          type="button"
-          onClick={() => togglePanel('worlds')}
-        >
-          <span>{universeWorlds.length}</span>
-          Worlds
-        </button>
-        <button
-          className={activePanel === 'characters' ? 'active' : ''}
-          type="button"
-          onClick={() => togglePanel('characters')}
-        >
-          <span>{universeCharacters.length}</span>
-          Characters
-        </button>
-      </div>
-
-      {activePanel === 'worlds' ? (
-        <LinkedPanel
-          emptyText={
-            worldsStatus === 'loading' ? 'Loading worlds...' : 'No worlds found.'
-          }
-          searchId="universe-world-search"
-          searchLabel="Search worlds"
-          searchValue={worldSearch}
-          title="Worlds"
-          onSearch={setWorldSearch}
-        >
-          <div className="linked-world-list">
-            {visibleWorlds.map((world) => (
-              <button
-                className="linked-world-row"
-                key={world.id}
-                style={
-                  resourceImage(world)
-                    ? { backgroundImage: `url(${resourceImage(world)})` }
-                    : undefined
-                }
-                type="button"
-                onClick={() => onNavigate(`/worlds/${world.id}`)}
-              >
-                <span>{world.name}</span>
-              </button>
-            ))}
-          </div>
-        </LinkedPanel>
-      ) : null}
-
-      {activePanel === 'characters' ? (
-        <LinkedPanel
-          emptyText={
-            charactersStatus === 'loading'
-              ? 'Loading characters...'
-              : 'No characters found.'
-          }
-          searchId="universe-character-search"
-          searchLabel="Search characters"
-          searchValue={characterSearch}
-          title="Characters"
-          onSearch={setCharacterSearch}
-        >
-          <div className="linked-character-list">
-            {visibleCharacters.map((character) => (
-              <button
-                className="linked-character-row"
-                key={character.id}
-                type="button"
-                onClick={() => onNavigate(`/characters/${character.id}`)}
-              >
-                {resourcePortrait(character) ? (
-                  <img src={resourcePortrait(character)} alt="" />
-                ) : (
-                  <span className="linked-character-fallback" aria-hidden="true">
-                    {initialsFor(character.name || 'RH')}
-                  </span>
-                )}
-                <span>{character.name}</span>
-              </button>
-            ))}
-          </div>
-        </LinkedPanel>
-      ) : null}
-    </section>
-  )
-}
-
-function LinkedPanel({
-  children,
-  emptyText,
-  onSearch,
-  searchId,
-  searchLabel,
-  searchValue,
-  title,
-}) {
-  const childCount = children.props.children.length
-
-  return (
-    <div className="universe-linked-panel">
-      <div className="linked-panel-header">
-        <h2>{title}</h2>
-        <label htmlFor={searchId}>
-          <span>{searchLabel}</span>
-          <input
-            id={searchId}
-            type="search"
-            value={searchValue}
-            onChange={(event) => onSearch(event.target.value)}
-          />
-        </label>
-      </div>
-      {childCount > 0 ? children : <p className="empty-state">{emptyText}</p>}
-    </div>
-  )
-}
-
-function belongsToUniverse(resource, universeId) {
-  return (
-    String(resource.universe_id) === String(universeId) ||
-    String(resource.universe?.id) === String(universeId)
-  )
-}
-
-function filterByName(items, search) {
-  const normalizedSearch = search.trim().toLowerCase()
-  if (!normalizedSearch) return items
-
-  return items.filter((item) =>
-    item.name.toLowerCase().includes(normalizedSearch),
   )
 }

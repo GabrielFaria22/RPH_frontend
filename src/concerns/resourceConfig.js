@@ -20,6 +20,8 @@ export const RESOURCE_CONFIG = {
     editEyebrow: 'Edit faction',
     formKey: 'faction',
     hasFamilies: true,
+    hasImages: true,
+    imageLegend: 'Faction images',
     needsLeaderCharacter: true,
     needsUniverse: true,
     introPlaceholder: 'Write a short introduction for this faction.',
