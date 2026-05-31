@@ -1,10 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 const CROP_PRESETS = {
-  cover: {
+  banner: {
     aspect: 126 / 23,
     outputHeight: 460,
     outputWidth: 2520,
+  },
+  cover: {
+    aspect: 16 / 9,
+    outputHeight: 1080,
+    outputWidth: 1920,
+  },
+  crest: {
+    aspect: 1,
+    outputHeight: 1000,
+    outputWidth: 1000,
   },
   portrait: {
     aspect: 4 / 5,
@@ -13,8 +23,12 @@ const CROP_PRESETS = {
   },
 }
 const CROP_HELP_TEXT = {
+  banner:
+    'Saved as 2520 x 460 px, ratio 126:23. Used for the wide resource header and universe/world list backgrounds.',
   cover:
-    'Saved as 2520 x 460 px, ratio 126:23. Used for the wide resource cover and universe/world list backgrounds.',
+    'Saved as 1920 x 1080 px, ratio 16:9. Reserved for future top-page background layouts.',
+  crest:
+    'Saved as 1000 x 1000 px, ratio 1:1. Useful for icons, emblems, symbols, or badges.',
   portrait:
     'Saved as 800 x 1000 px, ratio 4:5. Used for character cards and article infobox portraits.',
 }
@@ -30,7 +44,7 @@ function croppedFileName(fileName, mode) {
   return `${cleanName}-${mode}-crop.jpg`
 }
 
-// Renders an image picker that lets users crop cover and portrait uploads.
+// Renders an image picker that lets users crop resource image uploads.
 export function ImageCropInput({ id, label, mode, onCroppedFile }) {
   const preset = CROP_PRESETS[mode]
   const imageRef = useRef(null)
@@ -108,7 +122,6 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
 
     const viewportWidth = previewSize.width
     const viewportHeight = previewSize.height
-    // Zoom 1 keeps the old behavior by covering the crop box; lower zoom reveals blur fill.
     const baseScale = Math.max(
       viewportWidth / imageSize.width,
       viewportHeight / imageSize.height,

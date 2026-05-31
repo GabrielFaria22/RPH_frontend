@@ -74,6 +74,8 @@ export function ResourceEditorForm({
   const [isPublic, setIsPublic] = useState(Boolean(resource.public))
   const [portraitFile, setPortraitFile] = useState(null)
   const [coverFile, setCoverFile] = useState(null)
+  const [bannerFile, setBannerFile] = useState(null)
+  const [crestFile, setCrestFile] = useState(null)
   const [galleryFiles, setGalleryFiles] = useState([])
   const [characterRelations, setCharacterRelations] = useState(initialCharacterRelations)
   const [deletedCharacterRelationIds, setDeletedCharacterRelationIds] = useState([])
@@ -105,6 +107,12 @@ export function ResourceEditorForm({
       : null,
     resource.cover_image
       ? { label: 'Cover image', attachment: resource.cover_image }
+      : null,
+    resource.banner_image
+      ? { label: 'Banner image', attachment: resource.banner_image }
+      : null,
+    resource.crest_image
+      ? { label: 'Crest image', attachment: resource.crest_image }
       : null,
     ...(resource.misc_images || []).map((attachment, index) => ({
       label: `Gallery image ${index + 1}`,
@@ -273,6 +281,8 @@ export function ResourceEditorForm({
         formData.append(`${config.formKey}[portrait_image]`, portraitFile)
       }
       if (coverFile) formData.append(`${config.formKey}[cover_image]`, coverFile)
+      if (bannerFile) formData.append(`${config.formKey}[banner_image]`, bannerFile)
+      if (crestFile) formData.append(`${config.formKey}[crest_image]`, crestFile)
       galleryFiles.forEach((file) => {
         formData.append(`${config.formKey}[misc_images][]`, file)
       })
@@ -281,6 +291,8 @@ export function ResourceEditorForm({
       setResource(savedResource)
       setPortraitFile(null)
       setCoverFile(null)
+      setBannerFile(null)
+      setCrestFile(null)
       setGalleryFiles([])
       setSaveStatus('success')
       setMessage(`${config.label} saved.`)
@@ -527,10 +539,22 @@ export function ResourceEditorForm({
               onCroppedFile={setPortraitFile}
             />
             <ImageCropInput
+              id="universe-crest"
+              label="Crest image"
+              mode="crest"
+              onCroppedFile={setCrestFile}
+            />
+            <ImageCropInput
               id="universe-cover"
               label="Cover image"
               mode="cover"
               onCroppedFile={setCoverFile}
+            />
+            <ImageCropInput
+              id="universe-banner"
+              label="Banner image"
+              mode="banner"
+              onCroppedFile={setBannerFile}
             />
             <label htmlFor="universe-gallery">Gallery images</label>
             <input

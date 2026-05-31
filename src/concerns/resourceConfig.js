@@ -38,6 +38,8 @@ export const RESOURCE_CONFIG = {
     editEyebrow: 'Edit family',
     formKey: 'family',
     hasOptionalFaction: true,
+    hasImages: true,
+    imageLegend: 'Family images',
     needsLeaderCharacter: true,
     needsUniverse: true,
     introPlaceholder: 'Write a short introduction for this family.',

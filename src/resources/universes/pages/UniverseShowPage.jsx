@@ -9,8 +9,9 @@ export function UniverseShowPage(props) {
     <ResourceShowPage
       {...props}
       kind={kind}
-      renderAfterTitle={(universe) => (
+      renderAfterTitle={(universe, descriptionContent) => (
         <UniverseLinkedLists
+          descriptionContent={descriptionContent}
           universe={universe}
           onNavigate={props.onNavigate}
         />

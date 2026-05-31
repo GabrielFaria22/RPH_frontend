@@ -29,13 +29,21 @@ export function initialsFor(name) {
 
 // Chooses the best wide/card image for a resource and resolves it against the API host.
 export function resourceImage(resource) {
-  const path = resource.cover_image?.url || resource.portrait_image?.url
+  const path =
+    resource.banner_image?.url ||
+    resource.cover_image?.url ||
+    resource.portrait_image?.url ||
+    resource.crest_image?.url
   return absoluteApiUrl(path)
 }
 
 // Chooses the best portrait image for a resource and resolves it against the API host.
 export function resourcePortrait(resource) {
-  const path = resource.portrait_image?.url || resource.cover_image?.url
+  const path =
+    resource.portrait_image?.url ||
+    resource.crest_image?.url ||
+    resource.banner_image?.url ||
+    resource.cover_image?.url
   return absoluteApiUrl(path)
 }
 

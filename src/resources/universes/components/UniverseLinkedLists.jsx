@@ -6,9 +6,9 @@ import {
   resourcePortrait,
 } from '../../../concerns/resourceHelpers'
 
-// Renders expandable, searchable lists for resources that belong to a universe.
-export function UniverseLinkedLists({ onNavigate, universe }) {
-  const [activePanel, setActivePanel] = useState('')
+// Renders tabbed universe content, including the default description and linked resources.
+export function UniverseLinkedLists({ descriptionContent, onNavigate, universe }) {
+  const [activeTab, setActiveTab] = useState('description')
   const [worldSearch, setWorldSearch] = useState('')
   const [factionSearch, setFactionSearch] = useState('')
   const [characterSearch, setCharacterSearch] = useState('')
@@ -43,42 +43,68 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
     () => filterByName(universeCharacters, characterSearch),
     [characterSearch, universeCharacters],
   )
-
-  // Opens the requested linked-resource drawer, or closes it if already open.
-  const togglePanel = (panel) => {
-    setActivePanel((current) => (current === panel ? '' : panel))
-  }
+  const firstWorldImage = resourceImage(universeWorlds[0] || {})
+  const firstFactionImage = resourceImage(universeFactions[0] || {})
 
   return (
     <section className="universe-linked-archive" aria-label="Universe resources">
-      <div className="universe-link-triggers">
+      <div className="universe-link-triggers" role="tablist" aria-label="Universe sections">
         <button
-          className={activePanel === 'worlds' ? 'active' : ''}
+          aria-selected={activeTab === 'description'}
+          className={activeTab === 'description' ? 'active' : ''}
+          role="tab"
           type="button"
-          onClick={() => togglePanel('worlds')}
+          onClick={() => setActiveTab('description')}
+        >
+          Description
+        </button>
+        <button
+          aria-selected={activeTab === 'worlds'}
+          className={activeTab === 'worlds' ? 'active' : ''}
+          role="tab"
+          style={
+            firstWorldImage ? { backgroundImage: `url(${firstWorldImage})` } : undefined
+          }
+          type="button"
+          onClick={() => setActiveTab('worlds')}
         >
           <span>{universeWorlds.length}</span>
           Worlds
         </button>
         <button
-          className={activePanel === 'factions' ? 'active' : ''}
+          aria-selected={activeTab === 'factions'}
+          className={activeTab === 'factions' ? 'active' : ''}
+          role="tab"
+          style={
+            firstFactionImage
+              ? { backgroundImage: `url(${firstFactionImage})` }
+              : undefined
+          }
           type="button"
-          onClick={() => togglePanel('factions')}
+          onClick={() => setActiveTab('factions')}
         >
           <span>{universeFactions.length}</span>
           Factions
         </button>
         <button
-          className={activePanel === 'characters' ? 'active' : ''}
+          aria-selected={activeTab === 'characters'}
+          className={activeTab === 'characters' ? 'active' : ''}
+          role="tab"
           type="button"
-          onClick={() => togglePanel('characters')}
+          onClick={() => setActiveTab('characters')}
         >
           <span>{universeCharacters.length}</span>
           Characters
         </button>
       </div>
 
-      {activePanel === 'worlds' ? (
+      {activeTab === 'description' ? (
+        <div className="universe-tab-panel" role="tabpanel">
+          {descriptionContent}
+        </div>
+      ) : null}
+
+      {activeTab === 'worlds' ? (
         <LinkedPanel
           createLabel="Create world"
           createPath={createPath('worlds', universe.id)}
@@ -113,7 +139,7 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
         </LinkedPanel>
       ) : null}
 
-      {activePanel === 'factions' ? (
+      {activeTab === 'factions' ? (
         <LinkedPanel
           createLabel="Create faction"
           createPath={createPath('factions', universe.id)}
@@ -150,7 +176,7 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
         </LinkedPanel>
       ) : null}
 
-      {activePanel === 'characters' ? (
+      {activeTab === 'characters' ? (
         <LinkedPanel
           createLabel="Create character"
           createPath={createPath('characters', universe.id)}

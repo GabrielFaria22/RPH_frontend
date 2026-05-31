@@ -83,6 +83,8 @@ export function ResourceCreatePage({
   const [worldId, setWorldId] = useState('')
   const [portraitFile, setPortraitFile] = useState(null)
   const [coverFile, setCoverFile] = useState(null)
+  const [bannerFile, setBannerFile] = useState(null)
+  const [crestFile, setCrestFile] = useState(null)
   const [galleryFiles, setGalleryFiles] = useState([])
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
@@ -144,6 +146,8 @@ export function ResourceCreatePage({
         formData.append(`${config.formKey}[portrait_image]`, portraitFile)
       }
       if (coverFile) formData.append(`${config.formKey}[cover_image]`, coverFile)
+      if (bannerFile) formData.append(`${config.formKey}[banner_image]`, bannerFile)
+      if (crestFile) formData.append(`${config.formKey}[crest_image]`, crestFile)
       galleryFiles.forEach((file) => {
         formData.append(`${config.formKey}[misc_images][]`, file)
       })
@@ -409,10 +413,22 @@ export function ResourceCreatePage({
                 onCroppedFile={setPortraitFile}
               />
               <ImageCropInput
+                id="new-resource-crest"
+                label="Crest image"
+                mode="crest"
+                onCroppedFile={setCrestFile}
+              />
+              <ImageCropInput
                 id="new-resource-cover"
                 label="Cover image"
                 mode="cover"
                 onCroppedFile={setCoverFile}
+              />
+              <ImageCropInput
+                id="new-resource-banner"
+                label="Banner image"
+                mode="banner"
+                onCroppedFile={setBannerFile}
               />
               <label htmlFor="new-resource-gallery">Gallery images</label>
               <input
