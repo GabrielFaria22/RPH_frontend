@@ -1,7 +1,9 @@
 
+import { useMemo, useState } from 'react'
 import { AppHeader } from '../../../pages/app/AppHeader'
 import { RESOURCE_CONFIG } from '../../../concerns/resourceConfig'
 import { usePublicResources } from '../../../concerns/resourceHooks'
+import { resourceImage } from '../../../concerns/resourceHelpers'
 import { CoverIndexCard } from '../components/CoverIndexCard'
 
 // Renders the searchable public index for a single resource type.
@@ -13,6 +15,17 @@ export function PublicResourceIndexPage({
   user,
 }) {
   const { error, items, status } = usePublicResources(kind)
+  const [search, setSearch] = useState('')
+  // Universes and worlds use wide list rows; the other resources use cover cards.
+  const usesLinkedListIndex = kind === 'universes' || kind === 'worlds'
+  const config = RESOURCE_CONFIG[kind]
+  // Applies the search box only to the linked-list index presentation.
+  const visibleItems = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) return items
+
+    return items.filter((item) => item.name?.toLowerCase().includes(query))
+  }, [items, search])
 
   return (
     <main className="app-shell">
@@ -41,7 +54,7 @@ export function PublicResourceIndexPage({
               onNavigate(`/${kind}/new`)
             }}
           >
-            Create {RESOURCE_CONFIG[kind].label}
+            Create {config.label}
           </a>
         </div>
 
@@ -53,8 +66,39 @@ export function PublicResourceIndexPage({
           <p className="empty-state">There is nothing visible here yet.</p>
         ) : null}
 
-        {status === 'ready' && items.length > 0 ? (
-          <div className="cover-index-grid">
+        {status === 'ready' && items.length > 0 && usesLinkedListIndex ? (
+          <div className="universe-linked-panel universe-index-list-panel">
+            <div className="linked-panel-header">
+              <h2>{config.collectionTitle.replace(/^My /, '')}</h2>
+              <label htmlFor={`${kind}-index-search`}>
+                <span>Search {kind}</span>
+                <input
+                  id={`${kind}-index-search`}
+                  type="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                />
+              </label>
+            </div>
+            {visibleItems.length > 0 ? (
+              <div className="linked-world-list">
+                {visibleItems.map((item) => (
+                  <LinkedIndexRow
+                    item={item}
+                    kind={kind}
+                    key={item.id}
+                    onNavigate={onNavigate}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="empty-state">No {kind} match that search.</p>
+            )}
+          </div>
+        ) : null}
+
+        {status === 'ready' && items.length > 0 && !usesLinkedListIndex ? (
+          <div className={`cover-index-grid ${kind}-index-grid`}>
             {items.map((item) => (
               <CoverIndexCard
                 item={item}
@@ -67,5 +111,25 @@ export function PublicResourceIndexPage({
         ) : null}
       </section>
     </main>
+  )
+}
+
+// Renders one wide background-image row in the universe/world public indexes.
+function LinkedIndexRow({ item, kind, onNavigate }) {
+  const cover = resourceImage(item)
+  const href = `/${kind}/${item.id}`
+
+  return (
+    <a
+      className="linked-world-row public-index-row"
+      href={href}
+      style={cover ? { backgroundImage: `url(${cover})` } : undefined}
+      onClick={(event) => {
+        event.preventDefault()
+        onNavigate(href)
+      }}
+    >
+      <span>{item.name}</span>
+    </a>
   )
 }

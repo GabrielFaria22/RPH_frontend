@@ -16,6 +16,7 @@ export function ResourceEditPage({
 }) {
   const config = RESOURCE_CONFIG[kind]
   const { error, resource, setResource, status } = useResource(kind, id)
+  // Families use a different ownership flag than the other API resources.
   const canEditResource =
     resource &&
     (kind === 'families'
@@ -65,6 +66,7 @@ export function ResourceEditPage({
             id={id}
             key={`${kind}-${resource.id}`}
             kind={kind}
+            onNavigate={onNavigate}
             onSaved={onSaved}
             resource={resource}
             setResource={setResource}

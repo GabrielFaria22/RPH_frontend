@@ -6,6 +6,48 @@ import { RESOURCE_CONFIG } from '../../../concerns/resourceConfig'
 import { useArchiveData } from '../../../concerns/resourceHooks'
 import { ImageCropInput } from '../components/ImageCropInput'
 
+// Matches the relationship enum values expected by the backend for new linked characters.
+const CHARACTER_RELATION_TYPES = [
+  { label: 'Parent', value: 'parent' },
+  { label: 'Child', value: 'child' },
+  { label: 'Sibling', value: 'sibling' },
+  { label: 'Grandparent', value: 'grandparent' },
+  { label: 'Grandchild', value: 'grandchild' },
+  { label: 'Ancestor', value: 'ancestor' },
+  { label: 'Descendant', value: 'descendant' },
+  { label: 'Spouse', value: 'spouse' },
+  { label: 'Partner', value: 'partner' },
+  { label: 'Lover', value: 'lover' },
+  { label: 'Fiancé', value: 'fiance' },
+  { label: 'Ex-partner', value: 'ex_partner' },
+  { label: 'Friend', value: 'friend' },
+  { label: 'Best friend', value: 'best_friend' },
+  { label: 'Acquaintance', value: 'acquaintance' },
+  { label: 'Ally', value: 'ally' },
+  { label: 'Enemy', value: 'enemy' },
+  { label: 'Rival', value: 'rival' },
+  { label: 'Mentor', value: 'mentor' },
+  { label: 'Student', value: 'student' },
+  { label: 'Guardian', value: 'guardian' },
+  { label: 'Ward', value: 'ward' },
+  { label: 'Adoptive parent', value: 'adoptive_parent' },
+  { label: 'Adoptive child', value: 'adoptive_child' },
+  { label: 'Step-parent', value: 'step_parent' },
+  { label: 'Step-child', value: 'step_child' },
+  { label: 'Uncle/Aunt', value: 'uncle_aunt' },
+  { label: 'Nephew/Niece', value: 'nephew_niece' },
+  { label: 'Cousin', value: 'cousin' },
+  { label: 'Coworker', value: 'coworker' },
+  { label: 'Leader', value: 'leader' },
+  { label: 'Follower', value: 'follower' },
+  { label: 'Master', value: 'master' },
+  { label: 'Servant', value: 'servant' },
+  { label: 'Creator', value: 'creator' },
+  { label: 'Creation', value: 'creation' },
+  { label: 'Alternate version', value: 'alternate_version' },
+  { label: 'Other', value: 'other' },
+]
+
 // Renders the shared create form used by resource-specific create pages.
 export function ResourceCreatePage({
   kind,
@@ -29,14 +71,24 @@ export function ResourceCreatePage({
   const [familyIds, setFamilyIds] = useState([])
   const [factionId, setFactionId] = useState('')
   const [leaderCharacterId, setLeaderCharacterId] = useState('')
-  const [universeId, setUniverseId] = useState('')
+  const [linkedCharacterId] = useState(
+    new URLSearchParams(window.location.search).get('related_character_id') || '',
+  )
+  const [linkedRelationType, setLinkedRelationType] = useState(
+    new URLSearchParams(window.location.search).get('relation_type') || 'sibling',
+  )
+  const [universeId, setUniverseId] = useState(
+    new URLSearchParams(window.location.search).get('universe_id') || '',
+  )
   const [worldId, setWorldId] = useState('')
   const [portraitFile, setPortraitFile] = useState(null)
   const [coverFile, setCoverFile] = useState(null)
   const [galleryFiles, setGalleryFiles] = useState([])
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
+  // Worlds and characters always need a universe; families/factions opt in through config.
   const needsUniverse = config.needsUniverse || kind === 'worlds' || kind === 'characters'
+  // Keeps the submit button disabled until all required fields for the current resource exist.
   const canSubmit =
     name.trim() &&
     status !== 'loading' &&
@@ -63,6 +115,16 @@ export function ResourceCreatePage({
         if (appearance.trim()) formData.append('character[appearance]', appearance.trim())
         if (occupation.trim()) {
           formData.append('character[occupation]', occupation.trim())
+        }
+        if (linkedCharacterId) {
+          formData.append(
+            'character[character_relationships_attributes][0][related_character_id]',
+            linkedCharacterId,
+          )
+          formData.append(
+            'character[character_relationships_attributes][0][relation_type]',
+            linkedRelationType,
+          )
         }
       }
       if (config.needsLeaderCharacter) {
@@ -279,6 +341,27 @@ export function ResourceCreatePage({
                 onChange={(event) => setAppearance(event.target.value)}
                 placeholder="Describe visual details, style, or presence."
               />
+
+              {linkedCharacterId ? (
+                <fieldset className="character-relations-fieldset">
+                  <legend>Starting relation</legend>
+                  <label htmlFor="new-resource-linked-relation">
+                    Relation to{' '}
+                    {displayCharacterName(archive.characters, linkedCharacterId)}
+                  </label>
+                  <select
+                    id="new-resource-linked-relation"
+                    value={linkedRelationType}
+                    onChange={(event) => setLinkedRelationType(event.target.value)}
+                  >
+                    {CHARACTER_RELATION_TYPES.map((relation) => (
+                      <option key={relation.value} value={relation.value}>
+                        {relation.label}
+                      </option>
+                    ))}
+                  </select>
+                </fieldset>
+              ) : null}
             </>
           ) : null}
 
@@ -353,5 +436,13 @@ export function ResourceCreatePage({
         </form>
       </section>
     </main>
+  )
+}
+
+// Finds the existing linked character name for the "create related character" flow.
+function displayCharacterName(characters, characterId) {
+  return (
+    characters.find((character) => String(character.id) === String(characterId))?.name ||
+    `Character #${characterId}`
   )
 }

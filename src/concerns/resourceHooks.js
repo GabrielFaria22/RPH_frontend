@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { getJson } from './api'
 import { sortByCreatedAt } from './resourceHelpers'
 
+// Loads every resource collection needed by dashboards, forms, and relationship pickers.
 export function useArchiveData() {
   const [archive, setArchive] = useState({
     characters: [],
@@ -17,6 +18,7 @@ export function useArchiveData() {
   useEffect(() => {
     let isMounted = true
 
+    // Fetches the user's private archive in parallel, then sorts each list newest first.
     async function loadArchive() {
       try {
         const [characters, factions, families, universes, worlds] = await Promise.all([
@@ -54,6 +56,7 @@ export function useArchiveData() {
   return { archive, error, status }
 }
 
+// Loads the visible index for one resource type: public resources plus resources owned by the user.
 export function usePublicResources(kind) {
   const [items, setItems] = useState([])
   const [status, setStatus] = useState('loading')
@@ -62,6 +65,7 @@ export function usePublicResources(kind) {
   useEffect(() => {
     let isMounted = true
 
+    // Refetches whenever the requested resource type changes.
     async function loadResources() {
       try {
         const resources = await getJson('/api/v1/' + kind)
@@ -85,6 +89,7 @@ export function usePublicResources(kind) {
   return { error, items, status }
 }
 
+// Loads one resource record by type and id for show/edit pages.
 export function useResource(kind, id) {
   const [resource, setResource] = useState(null)
   const [status, setStatus] = useState('loading')
@@ -93,6 +98,7 @@ export function useResource(kind, id) {
   useEffect(() => {
     let isMounted = true
 
+    // Keeps the loaded resource in local state so edit forms can update it after saving.
     async function loadResource() {
       try {
         const loadedResource = await getJson('/api/v1/' + kind + '/' + id)

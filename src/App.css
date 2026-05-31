@@ -978,6 +978,14 @@
   margin-top: 34px;
 }
 
+.characters-index-grid {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 280px));
+}
+
+.universe-index-list-panel {
+  margin-top: 34px;
+}
+
 .cover-index-card {
   position: relative;
   display: block;
@@ -1105,6 +1113,41 @@
   line-height: 1.42;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+.cover-index-card.characters {
+  width: min(100%, 280px);
+  min-height: auto;
+  aspect-ratio: 4 / 5;
+  border-radius: 24px;
+}
+
+.cover-index-card.characters::after {
+  display: none;
+}
+
+.cover-index-card.characters img,
+.cover-index-card.characters .cover-fallback {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: saturate(0.92);
+  transform: none;
+}
+
+.cover-index-card.characters:hover img,
+.cover-index-card.characters:hover .cover-fallback {
+  filter: saturate(1.06);
+  transform: scale(1.04);
+}
+
+.cover-index-card.characters .cover-card-content {
+  min-height: 100%;
+  padding: 20px;
+}
+
+.cover-index-card.characters .cover-card-content h2 {
+  margin: 0;
 }
 
 .wiki-article-shell,
@@ -1261,6 +1304,31 @@
   text-transform: uppercase;
 }
 
+.linked-panel-actions {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.linked-panel-create {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, #e92045, #9d1736);
+  color: #fff7f1;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow:
+    0 14px 28px rgba(150, 10, 32, 0.22),
+    inset 0 1px rgba(255, 255, 255, 0.24);
+}
+
 .linked-panel-header input {
   width: 100%;
   min-height: 42px;
@@ -1307,6 +1375,11 @@
     linear-gradient(135deg, rgba(111, 70, 216, 0.48), rgba(143, 23, 52, 0.62));
   background-position: center;
   background-size: cover;
+}
+
+.public-index-row {
+  display: block;
+  text-decoration: none;
 }
 
 .linked-world-row span,
@@ -1654,6 +1727,75 @@
   color: var(--ash);
   font-size: 14px;
   line-height: 1.42;
+}
+
+.character-relations-fieldset {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(8, 6, 16, 0.34);
+}
+
+.character-relations-fieldset legend {
+  padding: 0 8px;
+  color: var(--ember);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.relation-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.relation-toolbar label,
+.character-relation-row label {
+  margin: 0;
+}
+
+.relation-toolbar > button {
+  margin-top: 27px;
+}
+
+.relation-toolbar label span {
+  display: block;
+  margin-bottom: 7px;
+}
+
+.relation-toolbar button,
+.character-relation-row button {
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff7f1;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.character-relation-list {
+  display: grid;
+  gap: 10px;
+}
+
+.character-relation-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.7fr) minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .image-crop-input {
@@ -2217,12 +2359,21 @@
     grid-template-columns: 1fr;
   }
 
+  .linked-panel-actions {
+    grid-template-columns: 1fr;
+  }
+
   .wiki-layout,
   .edit-layout {
     grid-template-columns: 1fr;
   }
 
   .resource-field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .relation-toolbar,
+  .character-relation-row {
     grid-template-columns: 1fr;
   }
 

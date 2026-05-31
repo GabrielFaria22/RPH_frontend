@@ -1,9 +1,14 @@
 
-import { initialsFor, resourceImage, summarize } from '../../../concerns/resourceHelpers'
+import {
+  initialsFor,
+  resourceImage,
+  resourcePortrait,
+  summarize,
+} from '../../../concerns/resourceHelpers'
 
-// Renders one resource card in public index grids.
+// Renders one visual resource card in public index grids, using portraits for characters.
 export function CoverIndexCard({ item, kind, onNavigate }) {
-  const cover = resourceImage(item)
+  const cover = kind === 'characters' ? resourcePortrait(item) : resourceImage(item)
   const description =
     kind === 'characters'
       ? item.description || item.story || item.occupation
@@ -33,9 +38,11 @@ export function CoverIndexCard({ item, kind, onNavigate }) {
       )}
       <div className="cover-shade" aria-hidden="true" />
       <div className="cover-card-content">
-        <span>{item.public ? 'Public' : 'Mine'}</span>
+        {kind === 'characters' ? null : (
+          <span>{item.public ? 'Public' : 'Mine'}</span>
+        )}
         <h2>{item.name}</h2>
-        <p>{summarize(description, fallback)}</p>
+        {kind === 'characters' ? null : <p>{summarize(description, fallback)}</p>}
       </div>
     </a>
   )

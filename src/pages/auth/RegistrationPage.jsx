@@ -6,6 +6,7 @@ import { storeSession } from '../../concerns/session'
 
 const MIN_PASSWORD_LENGTH = 10
 
+// Renders signup, validates password confirmation, then signs the new user in automatically.
 export function RegistrationPage({
   initialEmail,
   onAuthenticated,
@@ -27,6 +28,7 @@ export function RegistrationPage({
     [email, password, passwordConfirmation, status],
   )
 
+  // Creates the account first, then logs in with the same credentials to receive a token.
   const handleSubmit = async (event) => {
     event.preventDefault()
     setStatus('loading')

@@ -44,6 +44,7 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
   )
 
   useEffect(
+    // Releases the temporary object URL whenever the selected source image changes or unmounts.
     () => () => {
       if (sourceUrl) URL.revokeObjectURL(sourceUrl)
     },
@@ -54,6 +55,7 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
     const preview = previewRef.current
     if (!preview || !sourceUrl) return undefined
 
+    // Measures the visible crop viewport so canvas math uses rendered dimensions.
     const updatePreviewSize = () => {
       setPreviewSize({
         height: preview.clientHeight,

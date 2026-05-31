@@ -10,12 +10,41 @@ import {
 } from '../../../concerns/resourceHelpers'
 import { ImageCropInput } from './ImageCropInput'
 
+// Relationship options supported by the character edit form's inline relation editor.
+const CHARACTER_RELATION_TYPES = [
+  { label: 'Sibling', value: 'sibling' },
+  { label: 'Lover', value: 'lover' },
+  { label: 'Alternate version', value: 'alternate_version' },
+  { label: 'Parent', value: 'parent' },
+  { label: 'Child', value: 'child' },
+  { label: 'Ally', value: 'ally' },
+  { label: 'Rival', value: 'rival' },
+  { label: 'Enemy', value: 'enemy' },
+  { label: 'Mentor', value: 'mentor' },
+  { label: 'Partner', value: 'partner' },
+  { label: 'Friend', value: 'friend' },
+]
+
 // Renders the shared edit form and maps resource-specific fields from config.
-export function ResourceEditorForm({ config, id, kind, onSaved, resource, setResource }) {
+export function ResourceEditorForm({
+  config,
+  id,
+  kind,
+  onNavigate,
+  onSaved,
+  resource,
+  setResource,
+}) {
   const { archive, error: archiveError, status: archiveStatus } = useArchiveData()
+  // Parses existing HTML once into the friendlier intro/sections editor model.
   const initialFriendlyArticle = useMemo(
     () => parseArticleSections(resource.description || resource.story || ''),
     [resource.description, resource.story],
+  )
+  // Normalizes existing character relationships once for the editable row model.
+  const initialCharacterRelations = useMemo(
+    () => normalizeCharacterRelations(resource),
+    [resource],
   )
   const [name, setName] = useState(resource.name || '')
   const [fullName, setFullName] = useState(resource.full_name || '')
@@ -46,20 +75,26 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
   const [portraitFile, setPortraitFile] = useState(null)
   const [coverFile, setCoverFile] = useState(null)
   const [galleryFiles, setGalleryFiles] = useState([])
+  const [characterRelations, setCharacterRelations] = useState(initialCharacterRelations)
+  const [deletedCharacterRelationIds, setDeletedCharacterRelationIds] = useState([])
+  const [newLinkedRelationType, setNewLinkedRelationType] = useState('sibling')
   const [saveStatus, setSaveStatus] = useState('idle')
   const [message, setMessage] = useState('')
+  // The friendly editor is canonical while that tab is active; otherwise raw HTML is used.
   const friendlyDescription = useMemo(
     () => sectionsToHtml(friendlyArticle),
     [friendlyArticle],
   )
   const effectiveDescription =
     editorTab === 'friendly' ? friendlyDescription : description
+  // Mirrors backend validation rules that vary by resource type.
   const canSave =
     saveStatus !== 'loading' &&
     name.trim() &&
     (kind === 'universes' || universeId) &&
     (!config.needsLeaderCharacter || leaderCharacterId) &&
     (!config.requiresFamilies || familyIds.length > 0)
+  // Preview renders the exact sanitized HTML that the show page will accept.
   const preview = useMemo(
     () => sanitizeArticleHtml(effectiveDescription),
     [effectiveDescription],
@@ -76,6 +111,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
       attachment,
     })),
   ].filter(Boolean)
+  // The available* lists keep already-linked records visible even if they are not in /mine.
   const availableUniverses =
     universeId && !archive.universes.some((universe) => String(universe.id) === universeId)
       ? [
@@ -220,6 +256,7 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
         formData.append('character[age]', age.trim())
         formData.append('character[appearance]', appearance.trim())
         formData.append('character[occupation]', occupation.trim())
+        appendCharacterRelations(formData, characterRelations, deletedCharacterRelationIds)
       }
       if (config.needsLeaderCharacter) {
         formData.append(`${config.formKey}[leader_character_id]`, leaderCharacterId)
@@ -422,6 +459,46 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
               value={appearance}
               onChange={(event) => setAppearance(event.target.value)}
               placeholder="Describe visual details, style, or presence."
+            />
+
+            <CharacterRelationsEditor
+              characters={archive.characters}
+              currentCharacterId={id}
+              newLinkedRelationType={newLinkedRelationType}
+              relations={characterRelations}
+              setNewLinkedRelationType={setNewLinkedRelationType}
+              onAddRelation={() =>
+                setCharacterRelations((current) => [
+                  ...current,
+                  { related_character_id: '', relation_type: 'sibling' },
+                ])
+              }
+              onNavigateNewLinked={() => {
+                const params = new URLSearchParams({
+                  related_character_id: String(id),
+                  relation_type: newLinkedRelationType,
+                })
+                if (universeId) params.set('universe_id', universeId)
+                onNavigate(`/characters/new?${params.toString()}`)
+              }}
+              onRemoveRelation={(index) => {
+                setCharacterRelations((current) => {
+                  const relation = current[index]
+                  if (relation?.id) {
+                    setDeletedCharacterRelationIds((ids) => [...ids, relation.id])
+                  }
+                  return current.filter((_, relationIndex) => relationIndex !== index)
+                })
+              }}
+              onUpdateRelation={(index, field, value) => {
+                setCharacterRelations((current) =>
+                  current.map((relation, relationIndex) =>
+                    relationIndex === index
+                      ? { ...relation, [field]: value }
+                      : relation,
+                  ),
+                )
+              }}
             />
           </>
         ) : null}
@@ -650,4 +727,161 @@ export function ResourceEditorForm({ config, id, kind, onSaved, resource, setRes
       </aside>
     </div>
   )
+}
+
+// Renders the nested character-relationship editor used only by character resources.
+function CharacterRelationsEditor({
+  characters,
+  currentCharacterId,
+  newLinkedRelationType,
+  onAddRelation,
+  onNavigateNewLinked,
+  onRemoveRelation,
+  onUpdateRelation,
+  relations,
+  setNewLinkedRelationType,
+}) {
+  // A character cannot be related to itself, so it is removed from target options.
+  const selectableCharacters = characters.filter(
+    (character) => String(character.id) !== String(currentCharacterId),
+  )
+
+  return (
+    <fieldset className="character-relations-fieldset">
+      <legend>Character relations</legend>
+      <div className="relation-toolbar">
+        <button type="button" onClick={onAddRelation}>
+          Link existing character
+        </button>
+        <label htmlFor="new-linked-character-relation">
+          <span>New character relation</span>
+          <select
+            id="new-linked-character-relation"
+            value={newLinkedRelationType}
+            onChange={(event) => setNewLinkedRelationType(event.target.value)}
+          >
+            {CHARACTER_RELATION_TYPES.map((relation) => (
+              <option key={relation.value} value={relation.value}>
+                {relation.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="button" onClick={onNavigateNewLinked}>
+          Create linked character
+        </button>
+      </div>
+
+      {relations.length > 0 ? (
+        <div className="character-relation-list">
+          {relations.map((relation, index) => (
+            <article className="character-relation-row" key={relation.key || relation.id || index}>
+              <label htmlFor={`character-relation-type-${index}`}>
+                Relation
+                <select
+                  id={`character-relation-type-${index}`}
+                  value={relation.relation_type}
+                  onChange={(event) =>
+                    onUpdateRelation(index, 'relation_type', event.target.value)
+                  }
+                >
+                  {CHARACTER_RELATION_TYPES.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label htmlFor={`character-relation-target-${index}`}>
+                Character
+                <select
+                  id={`character-relation-target-${index}`}
+                  value={relation.related_character_id}
+                  onChange={(event) =>
+                    onUpdateRelation(index, 'related_character_id', event.target.value)
+                  }
+                >
+                  <option value="">Choose a character</option>
+                  {selectableCharacters.map((character) => (
+                    <option key={character.id} value={character.id}>
+                      {character.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <button type="button" onClick={() => onRemoveRelation(index)}>
+                Remove
+              </button>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="editor-help">
+          Link this character to siblings, lovers, alternate versions, and other
+          important characters.
+        </p>
+      )}
+    </fieldset>
+  )
+}
+
+// Accepts several possible relationship payload shapes from the API and normalizes them for the form.
+function normalizeCharacterRelations(resource) {
+  const relations =
+    resource.character_relationships ||
+    resource.character_relations ||
+    resource.relationships ||
+    []
+
+  return relations
+    .map((relation, index) => {
+      const relatedCharacterId =
+        relation.related_character_id ||
+        relation.target_character_id ||
+        relation.character_id ||
+        relation.related_character?.id ||
+        relation.target_character?.id
+
+      return {
+        id: relation.id ? String(relation.id) : '',
+        key: relation.id ? `relation-${relation.id}` : `relation-${index}`,
+        related_character_id: relatedCharacterId ? String(relatedCharacterId) : '',
+        relation_type: relation.relation_type || relation.relationship_type || relation.type || 'sibling',
+      }
+    })
+    .filter((relation) => relation.related_character_id)
+}
+
+// Appends active and deleted relationship rows as Rails-style nested attributes.
+function appendCharacterRelations(formData, relations, deletedRelationIds) {
+  const activeRelations = relations.filter(
+    (relation) => relation.related_character_id && relation.relation_type,
+  )
+
+  activeRelations.forEach((relation, index) => {
+    appendCharacterRelation(formData, index, relation)
+  })
+
+  deletedRelationIds.forEach((relationId, offset) => {
+    const index = activeRelations.length + offset
+    appendCharacterRelation(formData, index, {
+      id: relationId,
+      related_character_id: '',
+      relation_type: 'sibling',
+      _destroy: true,
+    })
+  })
+}
+
+// Writes one character_relationships_attributes row into FormData.
+function appendCharacterRelation(formData, index, relation) {
+  const base = `character[character_relationships_attributes][${index}]`
+  if (relation.id) formData.append(`${base}[id]`, relation.id)
+  if (relation.related_character_id) {
+    formData.append(`${base}[related_character_id]`, relation.related_character_id)
+  }
+  formData.append(`${base}[relation_type]`, relation.relation_type)
+  if (relation._destroy) formData.append(`${base}[_destroy]`, '1')
 }

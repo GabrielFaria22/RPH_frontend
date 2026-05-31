@@ -10,6 +10,7 @@ const kind = 'family_trees'
 export function FamilyTreePage({ id, mode, onBack, onLogout, onNavigate, user }) {
   const { error, resource: familyTree, setResource, status } = useResource(kind, id)
   const { items: characters, status: charactersStatus } = usePublicResources('characters')
+  // A family tree only offers characters from the same universe as the owning family.
   const visibleCharacters = useMemo(
     () =>
       familyTree

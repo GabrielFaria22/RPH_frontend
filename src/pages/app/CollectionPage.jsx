@@ -3,6 +3,7 @@ import { useArchiveData } from '../../concerns/resourceHooks'
 import { initialsFor, resourceImage, summarize } from '../../concerns/resourceHelpers'
 import { AppHeader } from './AppHeader'
 
+// Shows one of the current user's private archive lists on the dashboard side of the app.
 export function CollectionPage({ kind, onBack, onLogout, onNavigate, title, user }) {
   const { archive, error, status } = useArchiveData()
   const items = archive[kind]
@@ -43,6 +44,7 @@ export function CollectionPage({ kind, onBack, onLogout, onNavigate, title, user
   )
 }
 
+// Renders a compact dashboard row for an owned resource.
 function ArchiveListItem({ item, kind }) {
   const description =
     kind === 'characters'

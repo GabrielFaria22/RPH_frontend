@@ -1,5 +1,6 @@
 import { API_URL } from './api'
 
+// Returns a newest-first copy of a resource list without mutating the original array.
 export function sortByCreatedAt(items) {
   return [...items].sort(
     (first, second) =>
@@ -8,12 +9,14 @@ export function sortByCreatedAt(items) {
   )
 }
 
+// Produces short card copy, using fallback text when the resource has no useful summary.
 export function summarize(text, fallback) {
   const cleanText = (text || fallback).trim()
   if (cleanText.length <= 112) return cleanText
   return `${cleanText.slice(0, 109).trim()}...`
 }
 
+// Builds up to two initials from a display name for avatar fallbacks.
 export function initialsFor(name) {
   return name
     .split(' ')
@@ -24,31 +27,37 @@ export function initialsFor(name) {
     .toUpperCase()
 }
 
+// Chooses the best wide/card image for a resource and resolves it against the API host.
 export function resourceImage(resource) {
   const path = resource.cover_image?.url || resource.portrait_image?.url
   return absoluteApiUrl(path)
 }
 
+// Chooses the best portrait image for a resource and resolves it against the API host.
 export function resourcePortrait(resource) {
   const path = resource.portrait_image?.url || resource.cover_image?.url
   return absoluteApiUrl(path)
 }
 
+// Resolves an arbitrary attachment URL returned by the API.
 export function attachmentUrl(attachment) {
   return absoluteApiUrl(attachment?.url)
 }
 
+// Looks up a linked resource's name by id, keeping the UI readable when only ids are present.
 export function displayNameById(items, id, fallbackLabel) {
   if (!id) return ''
   const item = items.find((candidate) => String(candidate.id) === String(id))
   return item?.name || `${fallbackLabel} #${id}`
 }
 
+// Converts API-relative upload paths into browser-loadable absolute URLs.
 function absoluteApiUrl(path) {
   if (!path) return ''
   return /^https?:\/\//i.test(path) ? path : `${API_URL}${path}`
 }
 
+// Converts plain text into simple paragraphs, while preserving existing HTML drafts.
 export function normalizeEditableHtml(value) {
   if (!value.trim()) return ''
   if (/<[a-z][\s\S]*>/i.test(value)) return value
@@ -59,6 +68,7 @@ export function normalizeEditableHtml(value) {
     .join('')
 }
 
+// Escapes user-written plain text before converting it into HTML snippets.
 export function escapeHtml(value) {
   return value
     .replaceAll('&', '&amp;')
@@ -68,6 +78,7 @@ export function escapeHtml(value) {
     .replaceAll("'", '&#039;')
 }
 
+// Turns headings into stable fragment ids for the article table of contents.
 function slugify(value) {
   return value
     .toLowerCase()
@@ -76,6 +87,7 @@ function slugify(value) {
     .replace(/(^-|-$)/g, '')
 }
 
+// Sanitizes article HTML to the small wiki-safe subset rendered with dangerouslySetInnerHTML.
 export function sanitizeArticleHtml(rawHtml) {
   const fallbackHtml =
     '<h2>Overview</h2><p>This universe does not have a written article yet.</p>'
@@ -157,6 +169,7 @@ export function sanitizeArticleHtml(rawHtml) {
   return { html: doc.body.innerHTML, toc }
 }
 
+// Converts stored article HTML into the structured plain-text editor model.
 export function parseArticleSections(rawHtml) {
   const parser = new DOMParser()
   const doc = parser.parseFromString(normalizeEditableHtml(rawHtml || ''), 'text/html')
@@ -190,6 +203,7 @@ export function parseArticleSections(rawHtml) {
   }
 }
 
+// Converts plain-text paragraphs into escaped <p> blocks for the saved article HTML.
 function paragraphsToHtml(text) {
   return text
     .split(/\n{2,}/)
@@ -199,6 +213,7 @@ function paragraphsToHtml(text) {
     .join('')
 }
 
+// Converts the friendly editor model back into the HTML article format expected by the API.
 export function sectionsToHtml(article) {
   const introHtml = paragraphsToHtml(article.intro)
   const sectionHtml = article.sections

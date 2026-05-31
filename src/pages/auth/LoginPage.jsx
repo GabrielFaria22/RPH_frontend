@@ -4,6 +4,7 @@ import universeMockup from '../../assets/wiki-universe-mockup.svg'
 import { postJson } from '../../concerns/api'
 import { storeSession } from '../../concerns/session'
 
+// Renders the sign-in form and stores the returned session before entering the app.
 export function LoginPage({ initialEmail, onAuthenticated, onBackHome, onGoRegister }) {
   const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState('')
@@ -12,6 +13,7 @@ export function LoginPage({ initialEmail, onAuthenticated, onBackHome, onGoRegis
 
   const canSubmit = email.trim() && password && status !== 'loading'
 
+  // Authenticates with the API and hands the stored user back to App for navigation.
   const handleSubmit = async (event) => {
     event.preventDefault()
     setStatus('loading')

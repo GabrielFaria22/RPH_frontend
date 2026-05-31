@@ -1,4 +1,6 @@
 
+// Describes the API keys, labels, validations, and optional features for each resource kind.
+// Shared create/edit/show/index pages read this instead of hard-coding per-resource branches.
 export const RESOURCE_CONFIG = {
   characters: {
     articleFallback: 'A character page waiting for story details.',

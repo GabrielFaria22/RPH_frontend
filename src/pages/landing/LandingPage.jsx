@@ -55,10 +55,12 @@ const faqs = [
   },
 ]
 
+// Renders the public marketing page and forwards collected emails into registration.
 export function LandingPage({ onLogin, onRegister }) {
   const [heroEmail, setHeroEmail] = useState('')
   const [footerEmail, setFooterEmail] = useState('')
 
+  // Starts registration with whichever email field the visitor submitted.
   const submitEmail = (event, email) => {
     event.preventDefault()
     onRegister('/register', email.trim())

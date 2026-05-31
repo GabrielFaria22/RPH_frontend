@@ -6,9 +6,11 @@ const RESOURCE_LINKS = [
   { label: 'Factions', path: '/factions', value: 'factions' },
 ]
 
+// Renders the authenticated app header and central resource navigation.
 export function AppHeader({ activeResource = '', onLogout, onNavigate, user }) {
   const email = user?.email || 'Archivist'
 
+  // Routes anchor clicks through App's client-side navigator.
   const navigateTo = (event, path) => {
     event.preventDefault()
     onNavigate(path)

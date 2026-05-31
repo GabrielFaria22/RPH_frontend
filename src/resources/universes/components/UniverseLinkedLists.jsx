@@ -16,6 +16,7 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
   const { items: factions, status: factionsStatus } = usePublicResources('factions')
   const { items: characters, status: charactersStatus } =
     usePublicResources('characters')
+  // Each list is filtered from public/owned resources down to this universe.
   const universeWorlds = useMemo(
     () => worlds.filter((world) => belongsToUniverse(world, universe.id)),
     [universe.id, worlds],
@@ -29,6 +30,7 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
       characters.filter((character) => belongsToUniverse(character, universe.id)),
     [characters, universe.id],
   )
+  // Each visible* list applies the search text for the corresponding open drawer.
   const visibleWorlds = useMemo(
     () => filterByName(universeWorlds, worldSearch),
     [universeWorlds, worldSearch],
@@ -78,6 +80,8 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
 
       {activePanel === 'worlds' ? (
         <LinkedPanel
+          createLabel="Create world"
+          createPath={createPath('worlds', universe.id)}
           emptyText={
             worldsStatus === 'loading' ? 'Loading worlds...' : 'No worlds found.'
           }
@@ -86,6 +90,7 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
           searchLabel="Search worlds"
           searchValue={worldSearch}
           title="Worlds"
+          onCreate={onNavigate}
           onSearch={setWorldSearch}
         >
           <div className="linked-world-list">
@@ -110,6 +115,8 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
 
       {activePanel === 'factions' ? (
         <LinkedPanel
+          createLabel="Create faction"
+          createPath={createPath('factions', universe.id)}
           emptyText={
             factionsStatus === 'loading'
               ? 'Loading factions...'
@@ -120,6 +127,7 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
           searchLabel="Search factions"
           searchValue={factionSearch}
           title="Factions"
+          onCreate={onNavigate}
           onSearch={setFactionSearch}
         >
           <div className="linked-faction-list">
@@ -144,6 +152,8 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
 
       {activePanel === 'characters' ? (
         <LinkedPanel
+          createLabel="Create character"
+          createPath={createPath('characters', universe.id)}
           emptyText={
             charactersStatus === 'loading'
               ? 'Loading characters...'
@@ -154,6 +164,7 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
           searchLabel="Search characters"
           searchValue={characterSearch}
           title="Characters"
+          onCreate={onNavigate}
           onSearch={setCharacterSearch}
         >
           <div className="linked-character-list">
@@ -184,8 +195,11 @@ export function UniverseLinkedLists({ onNavigate, universe }) {
 // Renders a named drawer panel with its search field and empty state.
 function LinkedPanel({
   children,
+  createLabel,
+  createPath,
   emptyText,
   hasItems,
+  onCreate,
   onSearch,
   searchId,
   searchLabel,
@@ -196,19 +210,35 @@ function LinkedPanel({
     <div className="universe-linked-panel">
       <div className="linked-panel-header">
         <h2>{title}</h2>
-        <label htmlFor={searchId}>
-          <span>{searchLabel}</span>
-          <input
-            id={searchId}
-            type="search"
-            value={searchValue}
-            onChange={(event) => onSearch(event.target.value)}
-          />
-        </label>
+        <div className="linked-panel-actions">
+          <label htmlFor={searchId}>
+            <span>{searchLabel}</span>
+            <input
+              id={searchId}
+              type="search"
+              value={searchValue}
+              onChange={(event) => onSearch(event.target.value)}
+            />
+          </label>
+          <a
+            className="linked-panel-create"
+            href={createPath}
+            onClick={(event) => {
+              event.preventDefault()
+              onCreate(createPath)
+            }}
+          >
+            {createLabel}
+          </a>
+        </div>
       </div>
       {hasItems ? children : <p className="empty-state">{emptyText}</p>}
     </div>
   )
+}
+
+function createPath(kind, universeId) {
+  return `/${kind}/new?universe_id=${encodeURIComponent(universeId)}`
 }
 
 // Checks whether a visible resource is connected to the current universe.

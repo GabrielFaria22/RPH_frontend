@@ -25,18 +25,24 @@ export function ResourceShowPage({
   const config = RESOURCE_CONFIG[kind]
   const { archive } = useArchiveData()
   const { error, resource, status } = useResource(kind, id)
+
+  // Controls whether the edit action appears for the loaded record.
   const canEditResource =
     resource &&
     (kind === 'families'
       ? resource.owned_by_current_user
       : resource.editable_by_current_user)
+
+  // Builds sanitized article markup and a table of contents whenever the resource text changes.
   const article = useMemo(
     () =>
       sanitizeArticleHtml(
         resource?.description || resource?.story || config.articleFallback,
-      ),
+    ),
     [config.articleFallback, resource?.description, resource?.story],
   )
+
+  // Cover and portrait images are optional and only supported by configured resource types.
   const cover = resource && config.hasImages ? resourceImage(resource) : ''
   const portrait = resource && config.hasImages ? resourcePortrait(resource) : ''
 

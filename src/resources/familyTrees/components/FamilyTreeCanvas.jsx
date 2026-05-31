@@ -15,10 +15,12 @@ const RELATION_TYPES = [
 const NODE_WIDTH = 176
 const NODE_HEIGHT = 96
 
+// Gives each character a stable canvas node id derived from its database id.
 function characterNodeId(characterId) {
   return `character-${characterId}`
 }
 
+// Coerces saved layout JSON into the exact shape the canvas expects.
 function normalizeLayout(layout = {}) {
   return {
     nodes: Array.isArray(layout.nodes) ? layout.nodes : [],
@@ -31,6 +33,7 @@ function normalizeLayout(layout = {}) {
   }
 }
 
+// Renders the interactive family tree, including read-only browsing and edit-mode layout tools.
 export function FamilyTreeCanvas({
   characters,
   familyTree,
@@ -52,6 +55,7 @@ export function FamilyTreeCanvas({
   const [edgeTargetId, setEdgeTargetId] = useState('')
   const [edgeType, setEdgeType] = useState('parent')
 
+  // Indexes characters by id so nodes can resolve their display data quickly.
   const characterById = useMemo(
     () =>
       new Map(
@@ -78,6 +82,7 @@ export function FamilyTreeCanvas({
     character.name.toLowerCase().includes(search.trim().toLowerCase()),
   )
 
+  // Calculates a viewport that centers a node in the visible stage.
   const centeredViewportForNode = useCallback((node, zoom = layout.viewport.zoom) => {
     const rect = stageRef.current?.getBoundingClientRect()
     const width = rect?.width || 900
@@ -91,6 +96,7 @@ export function FamilyTreeCanvas({
   }, [layout.viewport.zoom])
 
   useLayoutEffect(() => {
+    // On first load for a tree, center the viewport on the first saved node.
     if (!nodes.length || centeredTreeIdRef.current === String(familyTree.id)) return
 
     centeredTreeIdRef.current = String(familyTree.id)
@@ -100,6 +106,7 @@ export function FamilyTreeCanvas({
     }))
   }, [centeredViewportForNode, familyTree.id, nodes.length])
 
+  // Merges pan/zoom changes into the layout so saving persists the current viewport.
   const updateViewport = (nextViewport) => {
     setLayout((current) => ({
       ...current,
@@ -110,6 +117,7 @@ export function FamilyTreeCanvas({
     }))
   }
 
+  // Converts browser pointer coordinates into canvas coordinates after pan and zoom.
   const screenToTreePoint = (clientX, clientY) => {
     const rect = stageRef.current.getBoundingClientRect()
     return {
@@ -118,6 +126,7 @@ export function FamilyTreeCanvas({
     }
   }
 
+  // Begins moving a node while remembering where inside the node the pointer grabbed it.
   const startNodeDrag = (event, node) => {
     if (!isEditing) return
     event.preventDefault()
@@ -130,6 +139,7 @@ export function FamilyTreeCanvas({
     })
   }
 
+  // Applies either node dragging or stage panning depending on the active pointer state.
   const handlePointerMove = (event) => {
     if (dragState) {
       const point = screenToTreePoint(event.clientX, event.clientY)
@@ -155,11 +165,13 @@ export function FamilyTreeCanvas({
     }
   }
 
+  // Clears drag and pan state when the pointer interaction ends.
   const stopPointerInteraction = () => {
     setDragState(null)
     setPanState(null)
   }
 
+  // Zooms the tree with the mouse wheel while keeping zoom within a usable range.
   const handleWheel = (event) => {
     event.preventDefault()
     const nextZoom = Math.min(
@@ -169,6 +181,7 @@ export function FamilyTreeCanvas({
     updateViewport({ zoom: Number(nextZoom.toFixed(2)) })
   }
 
+  // Starts panning when the user presses the empty canvas instead of a node.
   const handleStagePointerDown = (event) => {
     if (event.target.closest('.family-tree-node')) return
 
@@ -183,6 +196,7 @@ export function FamilyTreeCanvas({
     })
   }
 
+  // Selects a node and pans the viewport so it is centered.
   const focusNode = (nodeId) => {
     const node = nodes.find((candidate) => candidate.id === nodeId)
     if (!node) return
@@ -191,6 +205,7 @@ export function FamilyTreeCanvas({
     updateViewport(centeredViewportForNode(node))
   }
 
+  // Recenters on the first node, or resets to the origin when the tree has no nodes.
   const resetViewport = () => {
     if (!nodes.length) {
       updateViewport({ x: 0, y: 0, zoom: 1 })
@@ -200,6 +215,7 @@ export function FamilyTreeCanvas({
     updateViewport(centeredViewportForNode(nodes[0], 1))
   }
 
+  // Adds an unplaced character to the canvas near the current viewport origin.
   const addCharacterNode = () => {
     if (!newCharacterId) return
 
@@ -222,6 +238,7 @@ export function FamilyTreeCanvas({
     setNewCharacterId('')
   }
 
+  // Deletes the selected node and any edges connected to it.
   const removeSelectedNode = () => {
     if (!selectedNodeId) return
 
@@ -235,6 +252,7 @@ export function FamilyTreeCanvas({
     setSelectedNodeId('')
   }
 
+  // Creates a relation edge between two selected canvas nodes.
   const addEdge = () => {
     if (!canAddEdge) return
 
@@ -256,6 +274,7 @@ export function FamilyTreeCanvas({
     setEdgeTargetId('')
   }
 
+  // Deletes the currently selected relation edge.
   const removeSelectedEdge = () => {
     if (!selectedEdgeId) return
     setLayout((current) => ({

@@ -48,6 +48,7 @@ import {
   getStoredUser,
 } from './concerns/session'
 
+// Maps every generic resource kind to the concrete page components used by the route switch.
 const RESOURCE_PAGES = {
   characters: {
     CreatePage: CharacterCreatePage,
@@ -81,25 +82,34 @@ const RESOURCE_PAGES = {
   },
 }
 
+// Owns top-level SPA routing, auth state, and the navigation callbacks passed to pages.
 function App() {
+  // Route is stored in React state instead of using React Router.
   const [route, setRoute] = useState(getInitialRoute)
+  // Email can be carried from landing/signup/login via a query param.
   const [prefilledEmail, setPrefilledEmail] = useState(getInitialEmail)
+  // Current user is restored from localStorage so refreshes keep the header populated.
   const [currentUser, setCurrentUser] = useState(getStoredUser)
 
+  // Pushes a browser-history entry and updates the lightweight route state used by this app.
   const navigate = (path, email = '') => {
-    const url = email ? path + '?email=' + encodeURIComponent(email) : path
-    window.history.pushState({}, '', url)
-    setPrefilledEmail(email)
-    setRoute(path)
+    const target = new URL(path, window.location.origin)
+    if (email) target.searchParams.set('email', email)
+
+    window.history.pushState({}, '', target.pathname + target.search)
+    setPrefilledEmail(email || target.searchParams.get('email') || '')
+    setRoute(target.pathname)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // Clears persisted auth data, resets the current user, and returns to the public landing page.
   const logout = () => {
     clearSession()
     setCurrentUser(null)
     navigate('/')
   }
 
+  // Shows the login page for protected routes and continues to the original destination after auth.
   const renderLoginGate = (redirectTo) => (
     <LoginPage
       initialEmail={prefilledEmail}
@@ -113,6 +123,7 @@ function App() {
   )
 
   useEffect(() => {
+    // Keeps browser back/forward buttons in sync with the route state.
     const handlePopState = () => {
       setRoute(getInitialRoute())
       setPrefilledEmail(getInitialEmail())
@@ -150,6 +161,7 @@ function App() {
     )
   }
 
+  // Public resource indexes, protected by login because they include the user's private records.
   const resourceRoute = route.match(
     /^\/(universes|worlds|characters|families|factions)$/,
   )
@@ -168,6 +180,7 @@ function App() {
     )
   }
 
+  // Shared create pages for each top-level resource type.
   const newResourceRoute = route.match(
     /^\/(universes|worlds|characters|families|factions)\/new$/,
   )
@@ -187,6 +200,7 @@ function App() {
       )
   }
 
+  // Shared show/edit pages for individual resources.
   const showOrEditRoute = route.match(
     /^\/(universes|worlds|characters|families|factions)\/(\d+)(\/edit)?$/,
   )
@@ -220,6 +234,7 @@ function App() {
     )
   }
 
+  // Family trees have their own canvas UI, so they are routed outside RESOURCE_PAGES.
   const familyTreeRoute = route.match(/^\/family_trees\/(\d+)(\/edit)?$/)
   if (familyTreeRoute) {
     const [, id, editSegment] = familyTreeRoute
@@ -252,6 +267,7 @@ function App() {
   if (route === '/app' || route.startsWith('/app/')) {
     if (!localStorage.getItem('roleplayHubToken')) return renderLoginGate('/app')
 
+    // Dashboard collection routes show only the current user's archived resources.
     const collectionRoute = route.match(
       /^\/app\/(characters|universes|worlds|families|factions)$/,
     )

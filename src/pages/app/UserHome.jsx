@@ -2,6 +2,7 @@
 import heroMockup from '../../assets/wiki-hero-mockup.svg'
 import { AppHeader } from './AppHeader'
 
+// Renders the authenticated landing dashboard after login.
 export function UserHome({ user, onLogout, onNavigate }) {
   return (
     <main className="app-shell">
