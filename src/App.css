@@ -1729,6 +1729,13 @@
   line-height: 1.42;
 }
 
+.image-crop-help {
+  margin: -8px 0 14px;
+  color: var(--ash);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .character-relations-fieldset {
   display: grid;
   gap: 14px;

@@ -12,6 +12,12 @@ const CROP_PRESETS = {
     outputWidth: 800,
   },
 }
+const CROP_HELP_TEXT = {
+  cover:
+    'Saved as 2520 x 460 px, ratio 126:23. Used for the wide resource cover and universe/world list backgrounds.',
+  portrait:
+    'Saved as 800 x 1000 px, ratio 4:5. Used for character cards and article infobox portraits.',
+}
 
 // Keeps a number inside a fixed range for zoom and drag boundaries.
 function clamp(value, min, max) {
@@ -102,6 +108,7 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
 
     const viewportWidth = previewSize.width
     const viewportHeight = previewSize.height
+    // Zoom 1 keeps the old behavior by covering the crop box; lower zoom reveals blur fill.
     const baseScale = Math.max(
       viewportWidth / imageSize.width,
       viewportHeight / imageSize.height,
@@ -118,7 +125,7 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
   }
   const metrics = previewMetrics()
 
-  // Restricts drag offsets so the crop viewport never shows empty space.
+  // Keeps the image reachable while allowing blur-filled empty space around zoomed-out crops.
   const clampOffset = (nextOffset, nextZoom = zoom) => {
     if (
       !previewSize.width ||
@@ -239,6 +246,7 @@ export function ImageCropInput({ id, label, mode, onCroppedFile }) {
         type="file"
         onChange={handleFileChange}
       />
+      <p className="image-crop-help">{CROP_HELP_TEXT[mode]}</p>
       {sourceUrl ? (
         <div className="image-crop-panel">
           <div

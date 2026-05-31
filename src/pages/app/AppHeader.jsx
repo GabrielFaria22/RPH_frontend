@@ -1,9 +1,6 @@
 const RESOURCE_LINKS = [
   { label: 'Universes', path: '/universes', value: 'universes' },
-  { label: 'Worlds', path: '/worlds', value: 'worlds' },
   { label: 'Characters', path: '/characters', value: 'characters' },
-  { label: 'Families', path: '/families', value: 'families' },
-  { label: 'Factions', path: '/factions', value: 'factions' },
 ]
 
 // Renders the authenticated app header and central resource navigation.

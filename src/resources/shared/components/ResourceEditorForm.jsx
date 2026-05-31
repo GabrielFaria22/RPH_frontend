@@ -543,8 +543,9 @@ export function ResourceEditorForm({
               }
             />
             <p>
-              Save after choosing files. Uploaded gallery images can be inserted
-              into the article from the image library below.
+              Gallery images are uploaded as selected and can use any proportion.
+              Save after choosing files to insert them into the article from the
+              image library below.
             </p>
           </fieldset>
         ) : null}

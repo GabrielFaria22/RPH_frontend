@@ -424,6 +424,9 @@ export function ResourceCreatePage({
                   setGalleryFiles(Array.from(event.target.files || []))
                 }
               />
+              <p>
+                Gallery images are uploaded as selected and can use any proportion.
+              </p>
             </fieldset>
           ) : null}
 
