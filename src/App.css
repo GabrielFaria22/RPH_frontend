@@ -1157,7 +1157,7 @@
   margin: 62px auto 0;
 }
 
-.universe-cover-hero {
+.resource-cover-hero {
   position: relative;
   overflow: hidden;
   aspect-ratio: 16 / 9;
@@ -1173,7 +1173,7 @@
   box-shadow: 0 34px 92px rgba(0, 0, 0, 0.44);
 }
 
-.universe-cover-hero::after {
+.resource-cover-hero::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1183,7 +1183,7 @@
   pointer-events: none;
 }
 
-.universe-cover-hero-content {
+.resource-cover-hero-content {
   position: relative;
   z-index: 1;
   display: grid;
@@ -1193,23 +1193,32 @@
   padding: clamp(18px, 3vw, 30px);
 }
 
-.universe-cover-hero .wiki-article-actions {
+.resource-cover-hero .wiki-article-actions {
   align-self: start;
   margin: 0;
 }
 
-.universe-cover-hero .wiki-title-block {
+.resource-cover-hero .wiki-title-block {
   align-self: end;
   grid-template-columns: minmax(0, 1fr);
   margin-bottom: clamp(14px, 2vw, 20px);
 }
 
-.universe-cover-hero .wiki-title-block h1 {
+.resource-cover-hero .wiki-title-block h1 {
   font-size: clamp(42px, 6.3vw, 76px);
 }
 
-.universe-cover-hero .wiki-title-block span {
+.resource-cover-hero .wiki-title-block span {
   background: rgba(8, 6, 16, 0.52);
+}
+
+.edit-resource-hero {
+  aspect-ratio: auto;
+  min-height: 360px;
+}
+
+.edit-resource-hero .resource-cover-hero-content {
+  min-height: 360px;
 }
 
 .wiki-cover {
@@ -2583,15 +2592,20 @@
     border-radius: 22px;
   }
 
-  .universe-cover-hero {
+  .resource-cover-hero {
     aspect-ratio: auto;
     min-height: 420px;
     border-radius: 22px;
   }
 
-  .universe-cover-hero-content {
+  .resource-cover-hero-content {
     min-height: 420px;
     padding: 18px;
+  }
+
+  .edit-resource-hero,
+  .edit-resource-hero .resource-cover-hero-content {
+    min-height: 320px;
   }
 
   .universe-link-triggers {

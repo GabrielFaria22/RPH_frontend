@@ -7,7 +7,6 @@ import {
   attachmentUrl,
   displayNameById,
   initialsFor,
-  resourceImage,
   resourcePortrait,
   sanitizeArticleHtml,
 } from '../../../concerns/resourceHelpers'
@@ -44,10 +43,9 @@ export function ResourceShowPage({
   )
 
   // Cover and portrait images are optional and only supported by configured resource types.
-  const cover = resource && config.hasImages ? resourceImage(resource) : ''
   const portrait = resource && config.hasImages ? resourcePortrait(resource) : ''
-  const usesUniverseMasthead = kind === 'universes'
-  const universeCover = usesUniverseMasthead ? attachmentUrl(resource?.cover_image) : ''
+  const usesUniverseTabs = kind === 'universes'
+  const heroCover = config.hasImages ? attachmentUrl(resource?.cover_image) : ''
   const characterUniverseId =
     kind === 'characters' ? resource?.universe?.id || resource?.universe_id : ''
   const characterUniverseName = kind === 'characters' ? resource?.universe?.name : ''
@@ -82,46 +80,12 @@ export function ResourceShowPage({
 
       {status === 'ready' && resource ? (
         <article className="wiki-article-shell">
-          {usesUniverseMasthead ? (
-            <section
-              className="universe-cover-hero"
-              style={
-                universeCover
-                  ? { backgroundImage: `url(${universeCover})` }
-                  : undefined
-              }
-              aria-label={`${resource.name} cover`}
-            >
-              <section className="universe-cover-hero-content">
-                <div className="wiki-article-actions">
-                  <button
-                    className="back-button"
-                    type="button"
-                    onClick={handleBackClick}
-                  >
-                    {backButtonLabel}
-                  </button>
-                  {canEditResource ? (
-                    <button className="back-button" type="button" onClick={onEdit}>
-                      Edit page
-                    </button>
-                  ) : null}
-                </div>
-
-                <header className="wiki-title-block">
-                  <p className="eyebrow">{config.label}</p>
-                  <h1>{resource.name}</h1>
-                  <span>{resource.public ? 'Public page' : 'Private page'}</span>
-                </header>
-
-              </section>
-            </section>
-          ) : (
-            <>
-              <div
-                className="wiki-cover"
-                style={cover ? { backgroundImage: `url(${cover})` } : undefined}
-              />
+          <section
+            className="resource-cover-hero"
+            style={heroCover ? { backgroundImage: `url(${heroCover})` } : undefined}
+            aria-label={`${resource.name} cover`}
+          >
+            <section className="resource-cover-hero-content">
               <div className="wiki-article-actions">
                 <button className="back-button" type="button" onClick={handleBackClick}>
                   {backButtonLabel}
@@ -149,12 +113,10 @@ export function ResourceShowPage({
                 <h1>{resource.name}</h1>
                 <span>{resource.public ? 'Public page' : 'Private page'}</span>
               </header>
+            </section>
+          </section>
 
-              {renderAfterTitle ? renderAfterTitle(resource) : null}
-            </>
-          )}
-
-          {usesUniverseMasthead && renderAfterTitle ? (
+          {usesUniverseTabs && renderAfterTitle ? (
             renderAfterTitle(
               resource,
               <ResourceArticleLayout
