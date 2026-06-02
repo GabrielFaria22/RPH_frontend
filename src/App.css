@@ -1290,7 +1290,7 @@
 
 .universe-link-triggers {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 10px;
   margin-bottom: 16px;
 }
@@ -1439,6 +1439,7 @@
 }
 
 .linked-world-list,
+.linked-family-list,
 .linked-faction-list,
 .linked-character-list {
   display: grid;
@@ -1446,6 +1447,7 @@
 }
 
 .linked-world-row,
+.linked-family-row,
 .linked-faction-row,
 .linked-character-row {
   width: 100%;
@@ -1458,6 +1460,7 @@
 }
 
 .linked-world-row,
+.linked-family-row,
 .linked-faction-row {
   min-height: 92px;
   overflow: hidden;
@@ -1476,6 +1479,7 @@
 }
 
 .linked-world-row span,
+.linked-family-row span,
 .linked-faction-row span {
   display: flex;
   width: min(54%, 420px);
@@ -1501,6 +1505,7 @@
 }
 
 .linked-character-row:hover,
+.linked-family-row:hover,
 .linked-faction-row:hover,
 .linked-world-row:hover {
   box-shadow: 0 0 0 2px rgba(242, 185, 100, 0.2);
@@ -1703,6 +1708,51 @@
 .wiki-infobox dd {
   margin: 0;
   color: var(--ash);
+}
+
+.related-family-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.related-family-list li {
+  display: grid;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+}
+
+.related-family-list span {
+  color: #fff9f3;
+  font-weight: 800;
+}
+
+.wiki-infobox .related-family-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+}
+
+.wiki-infobox .related-family-actions button {
+  border: 1px solid rgba(242, 185, 100, 0.32);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgba(242, 185, 100, 0.1);
+  color: #fff9f3;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.wiki-infobox .related-family-actions button:hover {
+  border-color: rgba(242, 185, 100, 0.64);
+  background: rgba(242, 185, 100, 0.18);
 }
 
 .edit-page > .eyebrow {
@@ -2613,6 +2663,7 @@
   }
 
   .linked-world-row span,
+  .linked-family-row span,
   .linked-faction-row span {
     width: 100%;
     font-size: 24px;

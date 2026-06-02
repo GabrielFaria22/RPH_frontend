@@ -10,9 +10,11 @@ import {
 export function UniverseLinkedLists({ descriptionContent, onNavigate, universe }) {
   const [activeTab, setActiveTab] = useState('description')
   const [worldSearch, setWorldSearch] = useState('')
+  const [familySearch, setFamilySearch] = useState('')
   const [factionSearch, setFactionSearch] = useState('')
   const [characterSearch, setCharacterSearch] = useState('')
   const { items: worlds, status: worldsStatus } = usePublicResources('worlds')
+  const { items: families, status: familiesStatus } = usePublicResources('families')
   const { items: factions, status: factionsStatus } = usePublicResources('factions')
   const { items: characters, status: charactersStatus } =
     usePublicResources('characters')
@@ -20,6 +22,10 @@ export function UniverseLinkedLists({ descriptionContent, onNavigate, universe }
   const universeWorlds = useMemo(
     () => worlds.filter((world) => belongsToUniverse(world, universe.id)),
     [universe.id, worlds],
+  )
+  const universeFamilies = useMemo(
+    () => families.filter((family) => belongsToUniverse(family, universe.id)),
+    [families, universe.id],
   )
   const universeFactions = useMemo(
     () => factions.filter((faction) => belongsToUniverse(faction, universe.id)),
@@ -35,6 +41,10 @@ export function UniverseLinkedLists({ descriptionContent, onNavigate, universe }
     () => filterByName(universeWorlds, worldSearch),
     [universeWorlds, worldSearch],
   )
+  const visibleFamilies = useMemo(
+    () => filterByName(universeFamilies, familySearch),
+    [familySearch, universeFamilies],
+  )
   const visibleFactions = useMemo(
     () => filterByName(universeFactions, factionSearch),
     [factionSearch, universeFactions],
@@ -44,6 +54,7 @@ export function UniverseLinkedLists({ descriptionContent, onNavigate, universe }
     [characterSearch, universeCharacters],
   )
   const firstWorldImage = resourceImage(universeWorlds[0] || {})
+  const firstFamilyImage = resourceImage(universeFamilies[0] || {})
   const firstFactionImage = resourceImage(universeFactions[0] || {})
 
   return (
@@ -85,6 +96,21 @@ export function UniverseLinkedLists({ descriptionContent, onNavigate, universe }
         >
           <span>{universeFactions.length}</span>
           Factions
+        </button>
+        <button
+          aria-selected={activeTab === 'families'}
+          className={activeTab === 'families' ? 'active' : ''}
+          role="tab"
+          style={
+            firstFamilyImage
+              ? { backgroundImage: `url(${firstFamilyImage})` }
+              : undefined
+          }
+          type="button"
+          onClick={() => setActiveTab('families')}
+        >
+          <span>{universeFamilies.length}</span>
+          Families
         </button>
         <button
           aria-selected={activeTab === 'characters'}
@@ -170,6 +196,43 @@ export function UniverseLinkedLists({ descriptionContent, onNavigate, universe }
                 onClick={() => onNavigate(`/factions/${faction.id}`)}
               >
                 <span>{faction.name}</span>
+              </button>
+            ))}
+          </div>
+        </LinkedPanel>
+      ) : null}
+
+      {activeTab === 'families' ? (
+        <LinkedPanel
+          createLabel="Create family"
+          createPath={createPath('families', universe.id)}
+          emptyText={
+            familiesStatus === 'loading'
+              ? 'Loading families...'
+              : 'No families found.'
+          }
+          hasItems={visibleFamilies.length > 0}
+          searchId="universe-family-search"
+          searchLabel="Search families"
+          searchValue={familySearch}
+          title="Families"
+          onCreate={onNavigate}
+          onSearch={setFamilySearch}
+        >
+          <div className="linked-family-list">
+            {visibleFamilies.map((family) => (
+              <button
+                className="linked-family-row"
+                key={family.id}
+                style={
+                  resourceImage(family)
+                    ? { backgroundImage: `url(${resourceImage(family)})` }
+                    : undefined
+                }
+                type="button"
+                onClick={() => onNavigate(`/families/${family.id}`)}
+              >
+                <span>{family.name}</span>
               </button>
             ))}
           </div>

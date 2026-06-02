@@ -122,6 +122,8 @@ export function ResourceShowPage({
               <ResourceArticleLayout
                 archive={archive}
                 article={article}
+                kind={kind}
+                onNavigate={onNavigate}
                 portrait={portrait}
                 resource={resource}
               />,
@@ -130,6 +132,8 @@ export function ResourceShowPage({
             <ResourceArticleLayout
               archive={archive}
               article={article}
+              kind={kind}
+              onNavigate={onNavigate}
               portrait={portrait}
               resource={resource}
             />
@@ -140,7 +144,10 @@ export function ResourceShowPage({
   )
 }
 
-function ResourceArticleLayout({ archive, article, portrait, resource }) {
+function ResourceArticleLayout({ archive, article, kind, onNavigate, portrait, resource }) {
+  const relatedFamilies =
+    kind === 'characters' ? normalizeRelatedFamilies(resource, archive) : []
+
   return (
     <div className="wiki-layout">
       <aside className="wiki-toc" aria-label="Contents">
@@ -217,7 +224,17 @@ function ResourceArticleLayout({ archive, article, portrait, resource }) {
               </dd>
             </div>
           ) : null}
-          {resource.family_ids?.length ? (
+          {kind === 'characters' && relatedFamilies.length ? (
+            <div>
+              <dt>Related families</dt>
+              <dd>
+                <RelatedFamilyLinks
+                  families={relatedFamilies}
+                  onNavigate={onNavigate}
+                />
+              </dd>
+            </div>
+          ) : resource.family_ids?.length ? (
             <div>
               <dt>Families</dt>
               <dd>
@@ -263,4 +280,90 @@ function ResourceArticleLayout({ archive, article, portrait, resource }) {
       </aside>
     </div>
   )
+}
+
+function RelatedFamilyLinks({ families, onNavigate }) {
+  return (
+    <ul className="related-family-list">
+      {families.map(({ family, familyTree }) => (
+        <li key={family.id}>
+          <span>{family.name || `Family #${family.id}`}</span>
+          <div className="related-family-actions">
+            <button
+              type="button"
+              onClick={() => onNavigate(`/families/${family.id}`)}
+            >
+              Family
+            </button>
+            {familyTree?.id ? (
+              <button
+                type="button"
+                onClick={() => onNavigate(`/family_trees/${familyTree.id}`)}
+              >
+                Tree
+              </button>
+            ) : null}
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function normalizeRelatedFamilies(resource, archive) {
+  if (resource.related_families?.length) {
+    return uniqueFamilies(
+      resource.related_families
+        .map((entry) => ({
+          family: entry.family,
+          familyTree: entry.family_tree,
+        }))
+        .filter((entry) => entry.family?.id),
+    )
+  }
+
+  if (resource.families?.length) {
+    const familyTrees = resource.family_trees || []
+
+    return uniqueFamilies(
+      resource.families.map((family) => ({
+        family,
+        familyTree:
+          familyTrees.find(
+            (familyTree) =>
+              String(familyTree.family_id) === String(family.id) ||
+              String(familyTree.id) === String(family.family_tree_id),
+          ) || (family.family_tree_id ? { id: family.family_tree_id } : null),
+      })),
+    )
+  }
+
+  if (resource.family_ids?.length) {
+    return uniqueFamilies(
+      resource.family_ids.map((familyId) => {
+        const family =
+          archive.families.find(
+            (candidate) => String(candidate.id) === String(familyId),
+          ) || { id: familyId, name: `Family #${familyId}` }
+
+        return {
+          family,
+          familyTree: family.family_tree_id ? { id: family.family_tree_id } : null,
+        }
+      }),
+    )
+  }
+
+  return []
+}
+
+function uniqueFamilies(families) {
+  const seen = new Set()
+
+  return families.filter(({ family }) => {
+    if (!family?.id || seen.has(String(family.id))) return false
+
+    seen.add(String(family.id))
+    return true
+  })
 }
